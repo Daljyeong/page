@@ -215,29 +215,4 @@ public class UserInterface {
         String retry = scanner.nextLine();
         return "y".equalsIgnoreCase(retry);
     }
-
-    // 이름 유효성 검증 (static)
-    public static boolean isValidName(String name) {
-        // 알파벳 대소문자와 공백만, 연속된 공백 및 앞뒤 공백 없음
-        return name.matches("^[A-Za-z]+(?: [A-Za-z]+)*$");
-    }
-
-    // 아이디 유효성 검증 (static)
-    public static boolean isValidId(String id) {
-        return id.matches("^[A-Za-z0-9]{3,20}$");
-    }
-
-    // 비밀번호 유효성 검증 (static)
-    public static boolean isValidPassword(String password) {
-        if (password.length() < 8 || password.length() > 20) return false;
-        if (password.contains(" ")) return false;
-        boolean hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
-        for (char ch : password.toCharArray()) {
-            if (Character.isUpperCase(ch)) hasUpper = true;
-            else if (Character.isLowerCase(ch)) hasLower = true;
-            else if (Character.isDigit(ch)) hasDigit = true;
-            else if ("!@#$%^&*()".indexOf(ch) >= 0) hasSpecial = true;
-        }
-        return hasUpper && hasLower && hasDigit && hasSpecial;
-    }
 }

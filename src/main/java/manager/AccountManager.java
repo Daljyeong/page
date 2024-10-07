@@ -43,18 +43,6 @@ public class AccountManager implements Serializable {
         }
     }
 
-    // 계정 데이터 로드
-    public static void loadAccounts() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("accounts.post"))) {
-            instance = (AccountManager) ois.readObject();
-        } catch (FileNotFoundException e) {
-            // 파일이 없으면 새 인스턴스를 사용
-            instance = new AccountManager();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("계정 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
-            instance = new AccountManager();
-        }
-    }
 
     public void saveData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {

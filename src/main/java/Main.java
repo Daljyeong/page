@@ -224,7 +224,7 @@ public class Main {
 
             try {
                 LocalDate input = LocalDate.parse(inputDate, dateFormatter);
-
+                lastAccessRecord.loadData();
                 if (lastAccessRecord.getLastAccessDate() != null && input.isBefore(lastAccessRecord.getLastAccessDate())) {
                     System.out.println("최근에 입력한 날짜보다 과거입니다. 다시 입력해주세요.");
                     continue;

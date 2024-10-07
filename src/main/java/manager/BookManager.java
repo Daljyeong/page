@@ -69,19 +69,6 @@ public class BookManager implements Serializable {
         }
     }
 
-    // 도서 데이터 로드
-    public static void loadBooks() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("books.post"))) {
-            instance = (BookManager) ois.readObject();
-        } catch (FileNotFoundException e) {
-            // 파일이 없으면 새 인스턴스를 사용
-            instance = new BookManager();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("도서 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
-            instance = new BookManager();
-        }
-    }
-
     // 모든 도서 로드
     @SuppressWarnings("unchecked")
     public void loadData() {

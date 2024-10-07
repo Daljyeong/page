@@ -11,28 +11,21 @@ public class User extends Account {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private List<Integer> borrowedBookIds;
-    private List<BorrowRecord> borrowRecords;
-    private List<ReturnRecord> returnRecords;
+    private List<Integer> borrowedBookIds = new ArrayList<Integer>();
+    private List<BorrowRecord> borrowRecords = new ArrayList<BorrowRecord>();
+    private List<ReturnRecord> returnRecords = new ArrayList<ReturnRecord>();
 
     public User(String name, String id, String password) {
         super(id, password);
         this.name = name;
-        this.borrowedBookIds = new ArrayList<>();
-        this.borrowRecords = new ArrayList<>();
-        this.returnRecords = new ArrayList<>();
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Integer> getBorrowedBookIds() {
-        return borrowedBookIds;
-    }
-
     public void borrowBook(int bookId) {
-        borrowedBookIds.add(bookId);
+        this.borrowedBookIds.add(bookId);
     }
 
     public void returnBook(int bookId) {
@@ -45,11 +38,11 @@ public class User extends Account {
     }
 
     public void addBorrowRecord(BorrowRecord newBorrowRecord){
-        borrowRecords.add(newBorrowRecord);
+        this.borrowRecords.add(newBorrowRecord);
 
     }
     public void addReturnRecord(ReturnRecord newReturnRecord){
-        returnRecords.add(newReturnRecord);
+        this.returnRecords.add(newReturnRecord);
     }
 
 }

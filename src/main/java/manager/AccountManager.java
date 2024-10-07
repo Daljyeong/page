@@ -27,20 +27,11 @@ public class AccountManager implements Serializable {
 
     public void addAccount(Account account) {
         accounts.put(account.getId(), account);
-        saveAccounts(); // 계정 추가 시 저장
+        saveData();
     }
 
     public Account getAccountById(String id) {
         return accounts.get(id);
-    }
-
-    // 계정 데이터 저장
-    public void saveAccounts() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("accounts.post"))) {
-            oos.writeObject(this);
-        } catch (IOException e) {
-            System.out.println("계정 데이터를 저장하는 중 오류가 발생했습니다: " + e.getMessage());
-        }
     }
 
 

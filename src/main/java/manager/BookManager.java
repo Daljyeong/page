@@ -32,14 +32,14 @@ public class BookManager implements Serializable {
     public Book addBook(String title, String author) {
         Book book = new Book(nextId++, title, author);
         books.put(book.getId(), book);
-        saveBooks(); // 도서 추가 시 저장
+        saveData(); // 도서 추가 시 저장
         return book;
     }
 
     // 도서 삭제 메서드
     public void removeBook(int id) {
         books.remove(id);
-        saveBooks(); // 도서 삭제 시 저장
+        saveData(); // 도서 삭제 시 저장
     }
 
     // 도서 ID로 검색
@@ -58,15 +58,6 @@ public class BookManager implements Serializable {
             }
         }
         return results;
-    }
-
-    // 도서 데이터 저장
-    public void saveBooks() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("books.post"))) {
-            oos.writeObject(this);
-        } catch (IOException e) {
-            System.out.println("도서 데이터를 저장하는 중 오류가 발생했습니다: " + e.getMessage());
-        }
     }
 
     // 모든 도서 로드

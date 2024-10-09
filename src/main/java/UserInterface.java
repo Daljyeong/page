@@ -1,4 +1,5 @@
 import manager.BookManager;
+import manager.MemoryBookManager;
 import models.*;
 import record.*;
 
@@ -8,7 +9,7 @@ import java.util.Scanner;
 public class UserInterface {
     private User user;
     private Scanner scanner;
-    private BookManager bookManager = BookManager.getInstance();
+    private BookManager bookManager = MemoryBookManager.getInstance();
 
     public UserInterface(User user) {
         this.user = user;

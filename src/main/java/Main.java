@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
-    private static AccountManager accountManager = AccountManager.getInstance();
-    private static BookManager bookManager = BookManager.getInstance();
+    private static final AccountManager accountManager = MemoryAccountManager.getInstance();
+    private static final BookManager bookManager = MemoryBookManager.getInstance();
     private static LastAccessRecord lastAccessRecord = LastAccessRecord.getInstance();
 
     public static void main(String[] args) {

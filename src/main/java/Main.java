@@ -30,9 +30,11 @@ public class Main {
             int choice = getUserChoice(1, 3);
             switch (choice) {
                 case 1:
+                    System.out.println("날짜 입력 후 로그인 화면으로 이동합니다.");
                     handleLogin();
                     break;
                 case 2:
+                    System.out.println("회원가입 화면으로 이동합니다.");
                     handleRegistration();
                     break;
                 case 3:

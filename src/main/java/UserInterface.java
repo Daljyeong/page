@@ -214,6 +214,6 @@ public class UserInterface {
     private boolean retryPrompt() {
         System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 사용자 메뉴 화면으로 이동합니다.): ");
         String retry = scanner.nextLine();
-        return "y".equalsIgnoreCase(retry);
+        return "y".equals(retry);
     }
 }

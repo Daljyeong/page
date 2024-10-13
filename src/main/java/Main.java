@@ -30,9 +30,11 @@ public class Main {
             int choice = getUserChoice(1, 3);
             switch (choice) {
                 case 1:
+                    System.out.println("날짜 입력 후 로그인 화면으로 이동합니다.");
                     handleLogin();
                     break;
                 case 2:
+                    System.out.println("회원가입 화면으로 이동합니다.");
                     handleRegistration();
                     break;
                 case 3:
@@ -94,7 +96,7 @@ public class Main {
         if (account != null && account.authenticate(password)) {
             System.out.print("로그인 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
             String confirm = scanner.nextLine();
-            if ("y".equalsIgnoreCase(confirm)) {
+            if ("y".equals(confirm)) {
                 LocalDate currentDate = LocalDate.now();
                 lastAccessRecord.setLastAccessDate(currentDate);
                 lastAccessRecord.saveData();
@@ -172,7 +174,7 @@ public class Main {
 
         System.out.print("회원가입 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
         String confirm = scanner.nextLine();
-        if ("y".equalsIgnoreCase(confirm)) {
+        if ("y".equals(confirm)) {
             accountManager.addAccount(new User(name, id, password));
             accountManager.saveData();
             System.out.println("회원가입이 완료되었습니다. 초기화면으로 돌아갑니다.");

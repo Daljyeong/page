@@ -92,7 +92,7 @@ public class AdminInterface {
 
         System.out.print("도서를 추가하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String confirm = scanner.nextLine();
-        if ("y".equalsIgnoreCase(confirm)) {
+        if ("y".equals(confirm)) {
             Book newBook = bookManager.addBook(title, author);
             bookManager.saveData();
             System.out.println("도서가 성공적으로 추가되었습니다. 도서 ID는 [" + newBook.getId() + "]입니다.");
@@ -135,7 +135,7 @@ public class AdminInterface {
             System.out.println("삭제할 도서: " + book.getTitle() + ", " + book.getAuthor());
             System.out.print("도서를 삭제하시겠습니까? (y / 다른 키를 입력하면 취소하고 관리자 메뉴로 이동합니다.): ");
             String confirm = scanner.nextLine();
-            if ("y".equalsIgnoreCase(confirm)) {
+            if ("y".equals(confirm)) {
                 bookManager.removeBook(bookId);
                 bookManager.saveData();
                 System.out.println("도서가 성공적으로 삭제되었습니다. 관리자 메뉴 화면으로 이동합니다.");
@@ -182,6 +182,6 @@ public class AdminInterface {
     private boolean retryPrompt() {
         System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String retry = scanner.nextLine();
-        return "y".equalsIgnoreCase(retry);
+        return "y".equals(retry);
     }
 }

@@ -1,4 +1,5 @@
 import manager.BookManager;
+import manager.MemoryBookManager;
 import models.*;
 import java.util.List;
 import java.util.Scanner;
@@ -6,7 +7,7 @@ import java.util.Scanner;
 public class AdminInterface {
     private Admin admin;
     private Scanner scanner;
-    private BookManager bookManager = BookManager.getInstance();
+    private BookManager bookManager = MemoryBookManager.getInstance();
 
     public AdminInterface(Admin admin) {
         this.admin = admin;

@@ -46,29 +46,26 @@ public class UserInterface {
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
                     return;
                 default:
-                    // 이 경우는 발생하지 않음
                     break;
             }
         }
     }
 
-    // 사용자 입력을 받아 유효한 메뉴 선택인지 확인
     private int getUserChoice(int min, int max) {
         while (true) {
             if (scanner.hasNextInt()) {
                 int choice = scanner.nextInt();
-                scanner.nextLine(); // 버퍼 클리어
+                scanner.nextLine();
                 if (choice >= min && choice <= max) {
                     return choice;
                 }
             } else {
-                scanner.nextLine(); // 버퍼 클리어
+                scanner.nextLine();
             }
             System.out.print("잘못된 입력입니다. " + min + "~" + max + " 사이의 번호로 다시 입력해주세요: ");
         }
     }
 
-    // 도서 검색 처리 (사용자와 관리자 공용)
     private void handleSearchBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 검색 화면");
@@ -88,17 +85,26 @@ public class UserInterface {
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("검색 결과:");
             for (Book book : results) {
-                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() + (book.isBorrowed() ? " (대출 중)" : ""));
+                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() +
+                        (book.hasBorrowedCopies() ? " (대출 중)" : ""));
             }
             System.out.println("--------------------------------------------------------------------------");
         }
     }
 
-    // 도서 대출 처리
+    //todo 빌리는 로직 수정햇음
     private void handleBorrowBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 대출 화면");
         System.out.println("--------------------------------------------------------------------------");
+
+        //todo 요구사항 4 구현했음
+        if (user.hasOverdueBooks()) {
+            System.out.println("연체된 미반납 도서가 있어 대출할 수 없습니다. 먼저 연체된 도서를 반납해주세요.");
+            return;
+        }
+
+
         while (true) {
             System.out.print("대출할 도서의 ID를 입력하세요: ");
             String inputId = scanner.nextLine();
@@ -118,22 +124,25 @@ public class UserInterface {
                 return;
             }
 
-            if (book.isBorrowed()) {
-                System.out.println("해당 도서는 이미 대출 중입니다.");
+            if (book.getAvailableCopies() == 0) {
+                System.out.println("대출 가능한 복사본이 없습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            book.borrow();
-            user.borrowBook(bookId);
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
-            user.addBorrowRecord(newBorrowRecord);
-            bookManager.saveData();
-            System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
+            BookCopy copy = book.borrowAvailableCopy();
+            if (copy != null) {
+                user.borrowBook(copy.getCopyId());
+                BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
+                user.addBorrowRecord(newBorrowRecord);
+                bookManager.saveData();
+                System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
+            } else {
+                System.out.println("대출에 실패했습니다. 사용자 메뉴 화면으로 이동합니다.");
+            }
             return;
         }
     }
 
-    // 도서 반납 처리
     private void handleReturnBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 반납 화면");
@@ -162,7 +171,6 @@ public class UserInterface {
                 return;
             }
 
-            book.returned();
             user.returnBook(bookId);
             bookManager.saveData();
             ReturnRecord newReturnRecord = new ReturnRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
@@ -172,7 +180,6 @@ public class UserInterface {
         }
     }
 
-    // 대출 현황 확인 처리
     private void handleViewBorrowedBooks() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 대출 현황 확인 화면");
@@ -196,21 +203,19 @@ public class UserInterface {
                 return;
             }
 
-            if (book.isBorrowed()) {
-                System.out.println("검색하신 도서는 이미 대출 중입니다. 사용자 메뉴 화면으로 이동합니다.");
-            } else {
+            if (book.getAvailableCopies() > 0) {
                 System.out.println("검색하신 도서는 대출이 가능합니다. 사용자 메뉴 화면으로 이동합니다.");
+            } else {
+                System.out.println("검색하신 도서는 이미 대출 중입니다. 사용자 메뉴 화면으로 이동합니다.");
             }
             return;
         }
     }
 
-    // 유효한 도서 ID인지 검증
     private boolean isValidBookId(String id) {
         return id.matches("^\\d+$");
     }
 
-    // 재입력 여부 확인
     private boolean retryPrompt() {
         System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 사용자 메뉴 화면으로 이동합니다.): ");
         String retry = scanner.nextLine();

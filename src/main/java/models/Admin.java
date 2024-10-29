@@ -8,5 +8,4 @@ public class Admin extends Account {
         super(id, password);
     }
 
-    //todo 추가할거 있음 하셈
 }

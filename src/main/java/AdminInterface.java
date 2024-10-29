@@ -20,33 +20,35 @@ public class AdminInterface {
             System.out.println(" 관리자 메뉴");
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("1. 도서 추가");
-            System.out.println("2. 도서 삭제");
-            System.out.println("3. 도서 검색");
-            System.out.println("4. 로그아웃");
+            System.out.println("2. 도서 사본 추가");
+            System.out.println("3. 도서 삭제");
+            System.out.println("4. 도서 검색");
+            System.out.println("5. 로그아웃");
             System.out.println("--------------------------------------------------------------------------");
             System.out.print("원하는 작업의 번호를 입력하세요: ");
-            int choice = getUserChoice(1, 4);
+            int choice = getUserChoice(1, 5);
             switch (choice) {
                 case 1:
                     handleAddBook();
                     break;
                 case 2:
-                    handleDeleteBook();
+                    handleAddCopies();
                     break;
                 case 3:
-                    handleSearchBook();
+                    handleDeleteBook();
                     break;
                 case 4:
+                    handleSearchBook();
+                    break;
+                case 5:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
                     return;
                 default:
-                    // 이 경우는 발생하지 않음
                     break;
             }
         }
     }
 
-    // 사용자 입력을 받아 유효한 메뉴 선택인지 확인
     private int getUserChoice(int min, int max) {
         while (true) {
             if (scanner.hasNextInt()) {
@@ -62,7 +64,7 @@ public class AdminInterface {
         }
     }
 
-    // 도서 추가 처리
+    //todo 도서 추갸할때 메서드도 받음
     private void handleAddBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 추가 화면");
@@ -90,10 +92,23 @@ public class AdminInterface {
             }
         }
 
+        int quantity = 0;
+        while (true) {
+            System.out.print("도서 수량을 입력하세요: ");
+            if (scanner.hasNextInt()) {
+                quantity = scanner.nextInt();
+                scanner.nextLine(); // 버퍼 클리어
+                if (quantity > 0) break;
+            } else {
+                scanner.nextLine();
+            }
+            System.out.println("올바른 수량을 입력해주세요.");
+        }
+
         System.out.print("도서를 추가하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String confirm = scanner.nextLine();
         if ("y".equals(confirm)) {
-            Book newBook = bookManager.addBook(title, author);
+            Book newBook = bookManager.addBook(title, author, quantity);
             bookManager.saveData();
             System.out.println("도서가 성공적으로 추가되었습니다. 도서 ID는 [" + newBook.getId() + "]입니다.");
         } else {
@@ -101,7 +116,33 @@ public class AdminInterface {
         }
     }
 
-    // 도서 삭제 처리
+    //todo 도서 재고 추가 메서드
+    private void handleAddCopies() {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 도서 사본 추가 화면");
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.print("사본을 추가할 도서 ID를 입력하세요: ");
+        int bookId = Integer.parseInt(scanner.nextLine());
+
+        Book book = bookManager.getBookById(bookId);
+        if (book == null) {
+            System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+            return;
+        }
+
+        System.out.print("추가할 사본 수량을 입력하세요: ");
+        int copiesToAdd = Integer.parseInt(scanner.nextLine());
+
+        if (copiesToAdd > 0) {
+            book.addCopies(copiesToAdd);
+            bookManager.saveData();
+            System.out.println("사본이 성공적으로 추가되었습니다.");
+        } else {
+            System.out.println("올바른 수량을 입력해주세요.");
+        }
+    }
+
+
     private void handleDeleteBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 삭제 화면");
@@ -125,8 +166,8 @@ public class AdminInterface {
                 return;
             }
 
-            if (book.isBorrowed()) {
-                System.out.println("해당 도서는 대출중입니다. 삭제할 수 없습니다.");
+            if (book.hasBorrowedCopies()) {
+                System.out.println("해당 도서에 대출 중인 사본이 있어 삭제할 수 없습니다.");
                 System.out.println("--------------------------------------------------------------------------");
                 continue;
             }
@@ -147,7 +188,7 @@ public class AdminInterface {
         }
     }
 
-    // 도서 검색 처리 (관리자와 사용자 공용)
+    //todo 사본 수량도 알려준다
     private void handleSearchBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 검색 화면");
@@ -167,18 +208,17 @@ public class AdminInterface {
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("검색 결과:");
             for (Book book : results) {
-                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() + (book.isBorrowed() ? " (대출 중)" : ""));
+                int availableCopies = book.getAvailableCopies();
+                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() + " (사본 수량: " + availableCopies + ")");
             }
             System.out.println("--------------------------------------------------------------------------");
         }
     }
 
-    // 유효한 도서 ID인지 검증
     private boolean isValidBookId(String id) {
         return id.matches("^\\d+$");
     }
 
-    // 재입력 여부 확인
     private boolean retryPrompt() {
         System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String retry = scanner.nextLine();

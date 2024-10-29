@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface BookManager {
     // 도서 추가 메서드
-    public Book addBook(String title, String author);
+    public Book addBook(String title, String author, int quantity);
 
     // 도서 삭제 메서드
     public void removeBook(int id);

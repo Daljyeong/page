@@ -1,6 +1,7 @@
 package manager;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import models.*;
@@ -28,12 +29,34 @@ public class MemoryBookManager implements Serializable, BookManager {
         return instance;
     }
 
-    // 도서 추가 메서드
-    public Book addBook(String title, String author) {
-        Book book = new Book(nextId++, title, author);
+    //todo 도서 추가 메서드 (동명 동저자 존재 시 번호 추가)
+    public Book addBook(String title, String author, int quantity) {
+        int num = 1;
+
+        // 동명 동저자 책이 존재하는지 확인
+        for (Book existingBook : books.values()) {
+            if (existingBook.getTitle().contains(title) && existingBook.getAuthor().equalsIgnoreCase(author)) {
+                num++;  // 동명 동저자 책 존재 시 번호 증가
+            }
+        }
+
+        // Book 생성자에서 num 값 추가
+        Book book = new Book(nextId++, title, author, quantity, num);
         books.put(book.getId(), book);
         saveData(); // 도서 추가 시 저장
         return book;
+    }
+
+    //todo 도서 반납기한 설정 모든 book의 모든 bookCopy에 대해서 반납기한 설정
+    public void setBookReturnDate(LocalDate returnDate){
+        for (Book existingBook : books.values()) {
+            for (BookCopy copy: existingBook.getCopies()){
+                if (!copy.isBorrowed()){
+                    setBookReturnDate(returnDate);
+                }
+            }
+        }
+        saveData();
     }
 
     // 도서 삭제 메서드

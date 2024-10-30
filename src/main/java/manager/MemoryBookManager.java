@@ -1,6 +1,7 @@
 package manager;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import models.*;
@@ -44,6 +45,18 @@ public class MemoryBookManager implements Serializable, BookManager {
         books.put(book.getId(), book);
         saveData(); // 도서 추가 시 저장
         return book;
+    }
+
+    //todo 도서 반납기한 설정 모든 book의 모든 bookCopy에 대해서 반납기한 설정
+    public void setBookReturnDate(LocalDate returnDate){
+        for (Book existingBook : books.values()) {
+            for (BookCopy copy: existingBook.getCopies()){
+                if (!copy.isBorrowed()){
+                    setBookReturnDate(returnDate);
+                }
+            }
+        }
+        saveData();
     }
 
     // 도서 삭제 메서드

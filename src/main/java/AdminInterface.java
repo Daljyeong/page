@@ -1,6 +1,10 @@
 import manager.BookManager;
 import manager.MemoryBookManager;
 import models.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,10 +27,11 @@ public class AdminInterface {
             System.out.println("2. 도서 사본 추가");
             System.out.println("3. 도서 삭제");
             System.out.println("4. 도서 검색");
-            System.out.println("5. 로그아웃");
+            System.out.println("5. 반납 기한 설정");  // 추가된 반납 기한 설정 옵션
+            System.out.println("6. 로그아웃");
             System.out.println("--------------------------------------------------------------------------");
             System.out.print("원하는 작업의 번호를 입력하세요: ");
-            int choice = getUserChoice(1, 5);
+            int choice = getUserChoice(1, 6);
             switch (choice) {
                 case 1:
                     handleAddBook();
@@ -41,6 +46,9 @@ public class AdminInterface {
                     handleSearchBook();
                     break;
                 case 5:
+                    handleSetReturnDeadline();
+                    break;
+                case 6:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
                     return;
                 default:
@@ -63,6 +71,32 @@ public class AdminInterface {
             System.out.print("잘못된 입력입니다. " + min + "~" + max + " 사이의 번호로 다시 입력해주세요: ");
         }
     }
+
+    //todo C 전역 반납기한 설정
+    private void handleSetReturnDeadline() {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 반납 기한 설정");
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-12-31");
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (true) {
+            System.out.print("반납 기한을 입력하세요: ");
+            String inputDate = scanner.nextLine().trim();
+            try {
+                LocalDate returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
+                bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
+                System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("올바른 날짜 형식을 입력해주세요. 예: 2024-12-31");
+            }
+        }
+    }
+
+
+
 
     //todo 도서 추갸할때 메서드도 받음
     private void handleAddBook() {

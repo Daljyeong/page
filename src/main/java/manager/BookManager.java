@@ -1,6 +1,8 @@
 package manager;
 
 import models.Book;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface BookManager {
@@ -22,4 +24,7 @@ public interface BookManager {
 
     // 모든 도서 저장
     public void saveData();
+
+    //todo 당연히 인터페이스에도 동작 명시해야겠지? -> 구현체에 기능이 추가됐으니까
+    void setBookReturnDate(LocalDate returnDate);
 }

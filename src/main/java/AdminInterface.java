@@ -35,18 +35,23 @@ public class AdminInterface {
             switch (choice) {
                 case 1:
                     handleAddBook();
+                    System.out.println("도서 추가 화면으로 이동합니다.");
                     break;
                 case 2:
                     handleAddCopies();
+                    System.out.println("도서 사본 추가 화면으로 이동합니다.");
                     break;
                 case 3:
                     handleDeleteBook();
+                    System.out.println("도서 삭제 화면으로 이동합니다.");
                     break;
                 case 4:
                     handleSearchBook();
+                    System.out.println("도서 검색 화면으로 이동합니다.");
                     break;
                 case 5:
                     handleSetReturnDeadline();
+                    System.out.println("반납 기한 설정 화면으로 이동합니다.");
                     break;
                 case 6:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
@@ -155,12 +160,27 @@ public class AdminInterface {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 사본 추가 화면");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.print("사본을 추가할 도서 ID를 입력하세요: ");
-        int bookId = Integer.parseInt(scanner.nextLine());
+
+        int bookId;
+        while (true) {
+            System.out.print("사본을 추가할 도서의 ID를 입력하세요: ");
+            try {
+                bookId = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
+                String choice = scanner.nextLine();
+                if (!choice.equals("y")) {
+                    System.out.println("관리자 메뉴 화면으로 이동합니다.");
+                    return;
+                }
+            }
+        }
 
         Book book = bookManager.getBookById(bookId);
         if (book == null) {
-            System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+            System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 관리자 메뉴 화면으로 이동합니다.");
             return;
         }
 
@@ -170,11 +190,12 @@ public class AdminInterface {
         if (copiesToAdd > 0) {
             book.addCopies(copiesToAdd);
             bookManager.saveData();
-            System.out.println("사본이 성공적으로 추가되었습니다.");
+            System.out.println("사본이 성공적으로 추가되었습니다. 관리자 메뉴 화면으로 이동합니다.");
         } else {
             System.out.println("올바른 수량을 입력해주세요.");
         }
     }
+
 
 
     private void handleDeleteBook() {

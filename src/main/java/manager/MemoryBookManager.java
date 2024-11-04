@@ -52,7 +52,7 @@ public class MemoryBookManager implements Serializable, BookManager {
         for (Book existingBook : books.values()) {
             for (BookCopy copy: existingBook.getCopies()){
                 if (!copy.isBorrowed()){
-                    setBookReturnDate(returnDate);
+                    copy.setReturnDate(returnDate);
                 }
             }
         }

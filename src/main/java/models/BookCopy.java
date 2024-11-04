@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 // BookCopy 클래스
 public class BookCopy implements Serializable {
@@ -9,6 +10,7 @@ public class BookCopy implements Serializable {
     private static int nextCopyId = 1;  // 고유 ID 생성용
     private int copyId;
     private boolean isBorrowed;
+    private LocalDate returnDate;
 
     public BookCopy(int bookId) {
         this.copyId = nextCopyId++;
@@ -29,5 +31,12 @@ public class BookCopy implements Serializable {
 
     public void returned() {
         this.isBorrowed = false;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
+    public LocalDate getReturnDate() {
+        return returnDate;
     }
 }

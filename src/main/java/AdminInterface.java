@@ -85,18 +85,29 @@ public class AdminInterface {
         System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-12-31");
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+        LocalDate returnDate;
         while (true) {
             System.out.print("반납 기한을 입력하세요: ");
             String inputDate = scanner.nextLine().trim();
             try {
-                LocalDate returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
+                returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
                 bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
                 System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
                 break;
             } catch (DateTimeParseException e) {
                 System.out.println("올바른 날짜 형식을 입력해주세요. 예: 2024-12-31");
             }
+        }
+
+        //todo 반납기한 설정
+        System.out.print("반납기한을 설정 하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
+        String confirm = scanner.nextLine();
+        if ("y".equals(confirm)) {
+            bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
+            System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
+            bookManager.saveData();
+        } else {
+            System.out.println("관리자 메뉴 화면으로 이동합니다.");
         }
     }
 

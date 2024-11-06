@@ -31,20 +31,20 @@ public class UserInterface {
             int choice = getUserChoice(1, 5);
             switch (choice) {
                 case 1:
-                    handleSearchBook();
                     System.out.println("도서 검색 화면으로 이동합니다.");
+                    handleSearchBook();
                     break;
                 case 2:
-                    handleBorrowBook();
                     System.out.println("도서 대출 화면으로 이동합니다.");
+                    handleBorrowBook();
                     break;
                 case 3:
+                    System.out.println("도서 반납 화면으로 이동합니다.");
                     handleReturnBook();
-                    System.out.println("도서 반납 화면으로 이동합니다..");
                     break;
                 case 4:
-                    handleViewBorrowedBooks();
                     System.out.println("대출 현황 확인 화면으로 이동합니다.");
+                    handleViewBorrowedBooks();
                     break;
                 case 5:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
@@ -121,7 +121,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 

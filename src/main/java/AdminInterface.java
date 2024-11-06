@@ -34,24 +34,24 @@ public class AdminInterface {
             int choice = getUserChoice(1, 6);
             switch (choice) {
                 case 1:
-                    handleAddBook();
                     System.out.println("도서 추가 화면으로 이동합니다.");
+                    handleAddBook();
                     break;
                 case 2:
-                    handleAddCopies();
                     System.out.println("도서 사본 추가 화면으로 이동합니다.");
+                    handleAddCopies();
                     break;
                 case 3:
-                    handleDeleteBook();
                     System.out.println("도서 삭제 화면으로 이동합니다.");
+                    handleDeleteBook();
                     break;
                 case 4:
-                    handleSearchBook();
                     System.out.println("도서 검색 화면으로 이동합니다.");
+                    handleSearchBook();
                     break;
                 case 5:
-                    handleSetReturnDeadline();
                     System.out.println("반납 기한 설정 화면으로 이동합니다.");
+                    handleSetReturnDeadline();
                     break;
                 case 6:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");

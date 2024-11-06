@@ -31,15 +31,19 @@ public class UserInterface {
             int choice = getUserChoice(1, 5);
             switch (choice) {
                 case 1:
+                    System.out.println("도서 검색 화면으로 이동합니다.");
                     handleSearchBook();
                     break;
                 case 2:
+                    System.out.println("도서 대출 화면으로 이동합니다.");
                     handleBorrowBook();
                     break;
                 case 3:
+                    System.out.println("도서 반납 화면으로 이동합니다.");
                     handleReturnBook();
                     break;
                 case 4:
+                    System.out.println("대출 현황 확인 화면으로 이동합니다.");
                     handleViewBorrowedBooks();
                     break;
                 case 5:
@@ -92,18 +96,15 @@ public class UserInterface {
         }
     }
 
-    //todo 빌리는 로직 수정햇음
     private void handleBorrowBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 대출 화면");
         System.out.println("--------------------------------------------------------------------------");
 
-        //todo 요구사항 4 구현했음
         if (user.hasOverdueBooks()) {
             System.out.println("연체된 미반납 도서가 있어 대출할 수 없습니다. 먼저 연체된 도서를 반납해주세요.");
             return;
         }
-
 
         while (true) {
             System.out.print("대출할 도서의 ID를 입력하세요: ");
@@ -120,7 +121,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
@@ -133,6 +134,12 @@ public class UserInterface {
             if (copy != null) {
                 user.borrowBook(copy.getCopyId());
                 BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
+
+                //todo
+                if (copy.getReturnDate() != null) {
+                    newBorrowRecord.setReturnDate(copy.getReturnDate());
+                }
+
                 user.addBorrowRecord(newBorrowRecord);
                 bookManager.saveData();
                 System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");

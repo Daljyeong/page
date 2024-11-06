@@ -34,18 +34,23 @@ public class AdminInterface {
             int choice = getUserChoice(1, 6);
             switch (choice) {
                 case 1:
+                    System.out.println("도서 추가 화면으로 이동합니다.");
                     handleAddBook();
                     break;
                 case 2:
+                    System.out.println("도서 사본 추가 화면으로 이동합니다.");
                     handleAddCopies();
                     break;
                 case 3:
+                    System.out.println("도서 삭제 화면으로 이동합니다.");
                     handleDeleteBook();
                     break;
                 case 4:
+                    System.out.println("도서 검색 화면으로 이동합니다.");
                     handleSearchBook();
                     break;
                 case 5:
+                    System.out.println("반납 기한 설정 화면으로 이동합니다.");
                     handleSetReturnDeadline();
                     break;
                 case 6:
@@ -80,18 +85,29 @@ public class AdminInterface {
         System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-12-31");
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+        LocalDate returnDate;
         while (true) {
             System.out.print("반납 기한을 입력하세요: ");
             String inputDate = scanner.nextLine().trim();
             try {
-                LocalDate returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
+                returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
                 bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
                 System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
                 break;
             } catch (DateTimeParseException e) {
                 System.out.println("올바른 날짜 형식을 입력해주세요. 예: 2024-12-31");
             }
+        }
+
+        //todo 반납기한 설정
+        System.out.print("반납기한을 설정 하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
+        String confirm = scanner.nextLine();
+        if ("y".equals(confirm)) {
+            bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
+            System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
+            bookManager.saveData();
+        } else {
+            System.out.println("관리자 메뉴 화면으로 이동합니다.");
         }
     }
 
@@ -155,12 +171,27 @@ public class AdminInterface {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 사본 추가 화면");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.print("사본을 추가할 도서 ID를 입력하세요: ");
-        int bookId = Integer.parseInt(scanner.nextLine());
+
+        int bookId;
+        while (true) {
+            System.out.print("사본을 추가할 도서의 ID를 입력하세요: ");
+            try {
+                bookId = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
+                String choice = scanner.nextLine();
+                if (!choice.equals("y")) {
+                    System.out.println("관리자 메뉴 화면으로 이동합니다.");
+                    return;
+                }
+            }
+        }
 
         Book book = bookManager.getBookById(bookId);
         if (book == null) {
-            System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+            System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 관리자 메뉴 화면으로 이동합니다.");
             return;
         }
 
@@ -170,11 +201,12 @@ public class AdminInterface {
         if (copiesToAdd > 0) {
             book.addCopies(copiesToAdd);
             bookManager.saveData();
-            System.out.println("사본이 성공적으로 추가되었습니다.");
+            System.out.println("사본이 성공적으로 추가되었습니다. 관리자 메뉴 화면으로 이동합니다.");
         } else {
             System.out.println("올바른 수량을 입력해주세요.");
         }
     }
+
 
 
     private void handleDeleteBook() {

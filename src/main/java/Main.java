@@ -87,6 +87,10 @@ public class Main {
             return;
         }
 
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 로그인 화면");
+        System.out.println("--------------------------------------------------------------------------");
+
         System.out.print("아이디: ");
         String id = scanner.nextLine();
         System.out.print("비밀번호: ");
@@ -120,66 +124,52 @@ public class Main {
 
     // 회원가입 처리
     private static void handleRegistration() {
-        System.out.println("--------------------------------------------------------------------------");
-        System.out.println(" 회원가입 화면");
-        System.out.println("--------------------------------------------------------------------------");
-
-        String name;
         while (true) {
-            System.out.print("이름: ");
-            name = scanner.nextLine();
-            if (isValidName(name)) {
-                break;
-            } else {
-                System.out.println("이름은 알파벳 대소문자, 공백만 허용되며, 특수문자를 포함할 수 없습니다.");
-            }
-        }
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println(" 회원가입 화면");
+            System.out.println("--------------------------------------------------------------------------");
 
-        String id;
-        while (true) {
-            System.out.print("아이디: ");
-            id = scanner.nextLine();
-            if (isValidId(id)) {
-                if (accountManager.getAccountById(id) == null) {
-                    break;
-                } else {
-                    System.out.println("이미 존재하는 아이디입니다. 다른 아이디로 시도해주세요.");
+            System.out.println("이름은 알파벳 대소문자, 공백만 허용되며, 특수문자(예: !@#$%^&*())는 포함될 수 없습니다.");
+            System.out.println("내부 공백(예: 이름 사이의 공백)은 허용되며, 연속된 공백, 이름 전 후 공백은 허용되지 않습니다.");
+            System.out.print("=> 이름: ");
+            String name = scanner.nextLine();
+
+            System.out.println("사용자 ID는 3자 이상 20자 이하의 문자로 알파벳 대소문자(A-Z, a-z)와 숫자(0-9)만 허용되며, 특수문자나 공백은 포함될 수 없습니다.");
+            System.out.print("=> 아이디: ");
+            String id = scanner.nextLine();
+
+            System.out.println("비밀번호는 8자 이상 20자 이하로, 알파벳 대소문자, 숫자 및 특수문자를 최소한 하나 이상 포함해야 하며, 공백은 포함될 수 없습니다.");
+            System.out.print("=> 비밀번호: ");
+            String password = scanner.nextLine();
+
+            System.out.print("=> 비밀번호 확인: ");
+            String confirmPassword = scanner.nextLine();
+
+            System.out.print("회원가입 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
+            String confirm = scanner.nextLine();
+
+            if ("y".equals(confirm)) {
+                if (!isValidName(name) || !isValidId(id) || !isValidPassword(password)) {
+                    System.out.println("회원가입 조건에 부합하지 않습니다. 조건에 맞춰 다시 입력해주세요.");
+                    continue;
                 }
-            } else {
-                System.out.println("아이디는 3자 이상 20자 이하의 문자로 알파벳 대소문자와 숫자만 허용됩니다.");
-            }
-        }
+                if (accountManager.getAccountById(id) != null) {
+                    System.out.println("이미 존재하는 아이디입니다. 다른 아이디로 시도해주세요.");
+                    continue;
+                }
 
-        String password;
-        while (true) {
-            System.out.print("비밀번호: ");
-            password = scanner.nextLine();
-            if (isValidPassword(password)) {
-                break;
-            } else {
-                System.out.println("비밀번호는 8자 이상 20자 이하로, 알파벳 대소문자, 숫자 및 특수문자를 최소 하나 이상 포함해야 합니다.");
-            }
-        }
+                if (!password.equals(confirmPassword)) {
+                    System.out.println("비밀번호와 비밀번호 확인의 입력이 일치하지 않습니다. 다시 시도해주세요.");
+                    continue;
+                }
 
-        String confirmPassword;
-        while (true) {
-            System.out.print("비밀번호 확인: ");
-            confirmPassword = scanner.nextLine();
-            if (password.equals(confirmPassword)) {
-                break;
+                accountManager.addAccount(new User(name, id, password));
+                accountManager.saveData();
+                System.out.println("회원가입이 완료되었습니다. 초기화면으로 이동합니다.");
             } else {
-                System.out.println("비밀번호와 비밀번호 확인이 일치하지 않습니다. 다시 입력해주세요.");
+                System.out.println("초기화면으로 이동합니다.");
             }
-        }
-
-        System.out.print("회원가입 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
-        String confirm = scanner.nextLine();
-        if ("y".equals(confirm)) {
-            accountManager.addAccount(new User(name, id, password));
-            accountManager.saveData();
-            System.out.println("회원가입이 완료되었습니다. 초기화면으로 돌아갑니다.");
-        } else {
-            System.out.println("초기화면으로 돌아갑니다.");
+            break;
         }
     }
 

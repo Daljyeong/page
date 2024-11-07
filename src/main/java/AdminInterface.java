@@ -91,15 +91,14 @@ public class AdminInterface {
             String inputDate = scanner.nextLine().trim();
             try {
                 returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
-                bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
-                System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
                 break;
             } catch (DateTimeParseException e) {
                 System.out.println("올바른 날짜 형식을 입력해주세요. 예: 2024-12-31");
+                //todo 이 부분 추가
+                if (!retryPrompt()) return;
             }
         }
 
-        //todo 반납기한 설정
         System.out.print("반납기한을 설정 하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String confirm = scanner.nextLine();
         if ("y".equals(confirm)) {
@@ -111,10 +110,7 @@ public class AdminInterface {
         }
     }
 
-
-
-
-    //todo 도서 추갸할때 메서드도 받음
+    //todo 싹 다 개조 함
     private void handleAddBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 추가 화면");
@@ -124,10 +120,11 @@ public class AdminInterface {
         while (true) {
             System.out.print("도서 제목: ");
             title = scanner.nextLine().trim();
-            if (!title.isEmpty()) {
+            if (!title.isEmpty() && title.matches("^[a-zA-Z0-9 ]+$")) { // 영어와 숫자만 허용
                 break;
             } else {
-                System.out.println("도서 제목을 입력해주세요.");
+                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
             }
         }
 
@@ -135,10 +132,11 @@ public class AdminInterface {
         while (true) {
             System.out.print("도서 저자: ");
             author = scanner.nextLine().trim();
-            if (!author.isEmpty()) {
+            if (!author.isEmpty() && author.matches("^[a-zA-Z ]+$")) { // 영어만 허용
                 break;
             } else {
-                System.out.println("도서 저자를 입력해주세요.");
+                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
             }
         }
 
@@ -149,10 +147,12 @@ public class AdminInterface {
                 quantity = scanner.nextInt();
                 scanner.nextLine(); // 버퍼 클리어
                 if (quantity > 0) break;
+                else System.out.println("수량은 1 이상의 정수여야 합니다.");
             } else {
-                scanner.nextLine();
+                scanner.nextLine(); // 버퍼 클리어
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
             }
-            System.out.println("올바른 수량을 입력해주세요.");
+            if (!retryPrompt()) return;
         }
 
         System.out.print("도서를 추가하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
@@ -166,7 +166,7 @@ public class AdminInterface {
         }
     }
 
-    //todo 도서 재고 추가 메서드
+
     private void handleAddCopies() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 사본 추가 화면");
@@ -175,17 +175,13 @@ public class AdminInterface {
         int bookId;
         while (true) {
             System.out.print("사본을 추가할 도서의 ID를 입력하세요: ");
-            try {
-                bookId = Integer.parseInt(scanner.nextLine());
+            String input = scanner.nextLine().trim();
+            if (input.matches("^\\d+$")) { // 정수 형태인지 확인
+                bookId = Integer.parseInt(input);
                 break;
-            } catch (NumberFormatException e) {
+            } else {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
-                System.out.print("다시 입력하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
-                String choice = scanner.nextLine();
-                if (!choice.equals("y")) {
-                    System.out.println("관리자 메뉴 화면으로 이동합니다.");
-                    return;
-                }
+                if (!retryPrompt()) return;
             }
         }
 
@@ -195,17 +191,25 @@ public class AdminInterface {
             return;
         }
 
-        System.out.print("추가할 사본 수량을 입력하세요: ");
-        int copiesToAdd = Integer.parseInt(scanner.nextLine());
-
-        if (copiesToAdd > 0) {
-            book.addCopies(copiesToAdd);
-            bookManager.saveData();
-            System.out.println("사본이 성공적으로 추가되었습니다. 관리자 메뉴 화면으로 이동합니다.");
-        } else {
-            System.out.println("올바른 수량을 입력해주세요.");
+        int copiesToAdd;
+        while (true) {
+            System.out.print("추가할 사본 수량을 입력하세요: ");
+            String quantityInput = scanner.nextLine().trim();
+            if (quantityInput.matches("^\\d+$")) { // 정수 형태인지 확인
+                copiesToAdd = Integer.parseInt(quantityInput);
+                if (copiesToAdd > 0) break;
+                else System.out.println("수량은 1 이상의 정수여야 합니다.");
+            } else {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
+            }
         }
+
+        book.addCopies(copiesToAdd);
+        bookManager.saveData();
+        System.out.println("사본이 성공적으로 추가되었습니다. 관리자 메뉴 화면으로 이동합니다.");
     }
+
 
 
 
@@ -218,10 +222,8 @@ public class AdminInterface {
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
-                if (!retryPrompt()) {
-                    System.out.println("관리자 메뉴 화면으로 이동합니다.");
-                    return;
-                }
+                // todo 수정
+                if (!retryPrompt()) return;
                 continue;
             }
 
@@ -229,13 +231,14 @@ public class AdminInterface {
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
                 System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("관리자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
             if (book.hasBorrowedCopies()) {
                 System.out.println("해당 도서에 대출 중인 사본이 있어 삭제할 수 없습니다.");
-                System.out.println("--------------------------------------------------------------------------");
-                continue;
+                System.out.println("관리자 메뉴 화면으로 이동합니다.");
+                return;
             }
 
             System.out.println("--------------------------------------------------------------------------");
@@ -254,17 +257,27 @@ public class AdminInterface {
         }
     }
 
-    //todo 사본 수량도 알려준다
+    //todo 다 뜯어고침
     private void handleSearchBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 검색 화면");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
-        String keyword = scanner.nextLine().trim();
 
-        if (keyword.isEmpty()) {
-            System.out.println("검색어를 입력해주세요.");
-            return;
+        String keyword;
+        while (true) {
+            System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
+            keyword = scanner.nextLine().trim();
+
+            // 영어가 아닌 문자 포함 여부 검사
+            if (keyword.isEmpty()) {
+                System.out.println("검색어를 입력해주세요.");
+            } else if (!keyword.matches("[a-zA-Z\\s]+")) {
+                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+            } else {
+                break;
+            }
+
+            if (!retryPrompt()) return;
         }
 
         List<Book> results = bookManager.searchBooks(keyword);
@@ -280,6 +293,7 @@ public class AdminInterface {
             System.out.println("--------------------------------------------------------------------------");
         }
     }
+
 
     private boolean isValidBookId(String id) {
         return id.matches("^\\d+$");

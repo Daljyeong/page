@@ -234,15 +234,14 @@ public class AdminInterface {
                 System.out.println("관리자 메뉴 화면으로 이동합니다.");
                 return;
             }
-
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("삭제할 도서: " + book.getTitle() + ", " + book.getAuthor());
             if (book.hasBorrowedCopies()) {
                 System.out.println("해당 도서에 대출 중인 사본이 있어 삭제할 수 없습니다.");
                 System.out.println("관리자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            System.out.println("--------------------------------------------------------------------------");
-            System.out.println("삭제할 도서: " + book.getTitle() + ", " + book.getAuthor());
             System.out.print("도서를 삭제하시겠습니까? (y / 다른 키를 입력하면 취소하고 관리자 메뉴로 이동합니다.): ");
             String confirm = scanner.nextLine();
             if ("y".equals(confirm)) {

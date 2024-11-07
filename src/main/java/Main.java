@@ -214,12 +214,12 @@ public class Main {
 
 
     private static boolean validateAccessDate() {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 날짜 입력 화면");
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-09-25");
+        System.out.print("프로그램에서 사용할 날짜를 입력해주세요: ");
         while (true) {
-            System.out.println("--------------------------------------------------------------------------");
-            System.out.println(" 날짜 입력 화면");
-            System.out.println("--------------------------------------------------------------------------");
-            System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-09-25");
-            System.out.print("프로그램에서 사용할 날짜를 입력해주세요: ");
             String inputDate = scanner.nextLine();
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -238,7 +238,7 @@ public class Main {
                 return true;
 
             } catch (DateTimeParseException e) {
-                System.out.println("날짜 형식이 올바르지 않습니다. 다시 입력해주세요.");
+                System.out.print("형식에 맞지 않습니다. 다시 입력해주세요 : ");
             }
         }
     }

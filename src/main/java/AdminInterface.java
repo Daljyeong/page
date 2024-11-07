@@ -270,7 +270,7 @@ public class AdminInterface {
             // 영어가 아닌 문자 포함 여부 검사
             if (keyword.isEmpty()) {
                 System.out.println("검색어를 입력해주세요.");
-            } else if (!keyword.matches("[a-zA-Z\\s]+")) {
+            } else if (!keyword.matches("[a-zA-Z\\s\\d]+")) {
                 System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
             } else {
                 break;
@@ -295,7 +295,7 @@ public class AdminInterface {
 
 
     private boolean isValidBookId(String id) {
-        return id.matches("^[1-9]\\d*$");
+        return id.matches("^(0|[1-9]\\d*)$");
     }
 
     private boolean retryPrompt() {

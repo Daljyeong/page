@@ -7,10 +7,11 @@ public class BorrowRecord implements Serializable {
     private static final long serialVersionUID = 1L; // 직렬화 버전
     private String userId;
     private int bookId;
+    private int copyId;
     private LocalDate borrowDate;
     private LocalDate returnDate;
 
-    public BorrowRecord(String userId, int bookId, LocalDate borrowDate) {
+    public BorrowRecord(String userId, int bookId, int copyId, LocalDate borrowDate) {
         this.userId = userId;
         this.bookId = bookId;
         this.borrowDate = borrowDate;

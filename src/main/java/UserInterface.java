@@ -81,10 +81,10 @@ public class UserInterface {
             System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
             keyword = scanner.nextLine().trim();
 
+            // 영어가 아닌 문자 포함 여부 검사
             if (keyword.isEmpty()) {
                 System.out.println("검색어를 입력해주세요.");
-            }
-            else if (keyword.matches("^[a-zA-Z0-9 ]+$")) {
+            } else if (!keyword.matches("[a-zA-Z\\s]+")) {
                 System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
             } else {
                 break;

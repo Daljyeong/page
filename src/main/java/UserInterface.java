@@ -174,7 +174,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
@@ -208,7 +208,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 

@@ -74,17 +74,28 @@ public class UserInterface {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 검색 화면");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
-        String keyword = scanner.nextLine().trim();
 
-        if (keyword.isEmpty()) {
-            System.out.println("검색어를 입력해주세요.");
-            return;
+
+        String keyword;
+        while (true) {
+            System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
+            keyword = scanner.nextLine().trim();
+
+            // 영어가 아닌 문자 포함 여부 검사
+            if (keyword.isEmpty()) {
+                System.out.println("검색어를 입력해주세요.");
+            } else if (!keyword.matches("[a-zA-Z\\s]+")) {
+                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+            } else {
+                break;
+            }
+
+            if (!retryPrompt()) return;
         }
 
         List<Book> results = bookManager.searchBooks(keyword);
         if (results.isEmpty()) {
-            System.out.println("해당 키워드에 일치하는 도서가 존재하지 않습니다.");
+            System.out.println("입력하신 키워드에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
         } else {
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("검색 결과:");
@@ -163,7 +174,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
@@ -197,7 +208,7 @@ public class UserInterface {
             int bookId = Integer.parseInt(inputId);
             Book book = bookManager.getBookById(bookId);
             if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 

@@ -12,7 +12,7 @@ public class Main {
     private static final AccountManager accountManager = MemoryAccountManager.getInstance();
     private static final BookManager bookManager = MemoryBookManager.getInstance();
     private static LastAccessRecord lastAccessRecord = LastAccessRecord.getInstance();
-
+    private static LocalDate tempDate;
     public static void main(String[] args) {
         // 데이터 로드 post 파일 로드하함
         accountManager.loadData();
@@ -83,7 +83,7 @@ public class Main {
 
     // 로그인 처리
     private static void handleLogin() {
-        if (!validateAccessDate()) {
+        if (!validateAccessDate() || tempDate == null) {
             return;
         }
 
@@ -97,7 +97,7 @@ public class Main {
             System.out.print("로그인 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
             String confirm = scanner.nextLine();
             if ("y".equals(confirm)) {
-                LocalDate currentDate = LocalDate.now();
+                LocalDate currentDate = tempDate;
                 lastAccessRecord.setLastAccessDate(currentDate);
                 lastAccessRecord.saveData();
 
@@ -214,31 +214,28 @@ public class Main {
 
 
     private static boolean validateAccessDate() {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 날짜 입력 화면");
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-09-25");
+        System.out.print("프로그램에서 사용할 날짜를 입력해주세요: ");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         while (true) {
-            System.out.println("--------------------------------------------------------------------------");
-            System.out.println(" 날짜 입력 화면");
-            System.out.println("--------------------------------------------------------------------------");
-            System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-09-25");
-            System.out.print("프로그램에서 사용할 날짜를 입력해주세요: ");
             String inputDate = scanner.nextLine();
-
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             try {
                 LocalDate input = LocalDate.parse(inputDate, dateFormatter);
                 lastAccessRecord.loadData();
                 if (lastAccessRecord.getLastAccessDate() != null && input.isBefore(lastAccessRecord.getLastAccessDate())) {
-                    System.out.println("최근에 입력한 날짜보다 과거입니다. 다시 입력해주세요.");
+                    System.out.print("최근에 입력한 날짜보다 과거입니다. 다시 입력해주세요 : ");
                     continue;
                 }
-
-                lastAccessRecord.setLastAccessDate(input);
-                lastAccessRecord.saveData();
+                tempDate = input;
                 System.out.println("날짜 입력이 완료되었습니다. 로그인 화면으로 이동합니다.");
                 return true;
 
             } catch (DateTimeParseException e) {
-                System.out.println("날짜 형식이 올바르지 않습니다. 다시 입력해주세요.");
+                System.out.print("형식에 맞지 않습니다. 다시 입력해주세요 : ");
             }
         }
     }

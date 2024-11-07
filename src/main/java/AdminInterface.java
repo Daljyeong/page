@@ -296,7 +296,7 @@ public class AdminInterface {
 
 
     private boolean isValidBookId(String id) {
-        return id.matches("^\\d+$");
+        return id.matches("^[1-9]\\d*$");
     }
 
     private boolean retryPrompt() {

@@ -141,7 +141,7 @@ public class UserInterface {
             BookCopy copy = book.borrowAvailableCopy();
             if (copy != null) {
                 user.borrowBook(copy.getCopyId());
-                BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
+                BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, copy.getCopyId(),LastAccessRecord.getInstance().getLastAccessDate());
 
                 //todo
                 if (copy.getReturnDate() != null) {
@@ -178,7 +178,7 @@ public class UserInterface {
                 return;
             }
 
-            if (!user.hasBorrowedBook(bookId)) {
+            if (!user.hasBorrowedBook(book)) {
                 System.out.println("해당 도서는 귀하가 대출한 도서가 아닙니다.");
                 return;
             }

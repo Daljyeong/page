@@ -111,10 +111,7 @@ public class UserInterface {
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
-                if (!retryPrompt()) {
-                    System.out.println("사용자 메뉴 화면으로 이동합니다.");
-                    return;
-                }
+                if (!retryPrompt()) return;
                 continue;
             }
 
@@ -159,10 +156,7 @@ public class UserInterface {
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
-                if (!retryPrompt()) {
-                    System.out.println("사용자 메뉴 화면으로 이동합니다.");
-                    return;
-                }
+                if (!retryPrompt()) return;
                 continue;
             }
 
@@ -196,10 +190,7 @@ public class UserInterface {
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
-                if (!retryPrompt()) {
-                    System.out.println("사용자 메뉴 화면으로 이동합니다.");
-                    return;
-                }
+                if (!retryPrompt()) return;
                 continue;
             }
 

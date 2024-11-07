@@ -75,11 +75,21 @@ public class UserInterface {
         System.out.println(" 도서 검색 화면");
         System.out.println("--------------------------------------------------------------------------");
         System.out.print("검색할 키워드를 입력하세요 (제목 또는 저자): ");
-        String keyword = scanner.nextLine().trim();
 
-        if (keyword.isEmpty()) {
-            System.out.println("검색어를 입력해주세요.");
-            return;
+        String keyword;
+        while (true) {
+            System.out.print("도서 제목: ");
+            keyword = scanner.nextLine().trim();
+            if (keyword.isEmpty()) {
+                System.out.println("검색어를 입력해주세요.");
+                return;
+            }
+            if (keyword.matches("^[a-zA-Z0-9 ]+$")) { // 영어와 숫자만 허용
+                break;
+            } else {
+                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
+            }
         }
 
         List<Book> results = bookManager.searchBooks(keyword);

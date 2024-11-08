@@ -2,14 +2,12 @@ plugins {
     id 'java'
 }
 
-//jar파일 부분
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'Main'
-        )
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
+
 
 
 group = 'org.kuit4'

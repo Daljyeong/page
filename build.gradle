@@ -2,6 +2,16 @@ plugins {
     id 'java'
 }
 
+//jar파일 부분
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'Main'
+        )
+    }
+}
+
+
 group = 'org.kuit4'
 version = '1.0-SNAPSHOT'
 

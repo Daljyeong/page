@@ -80,7 +80,7 @@ public class AdminInterface {
     //todo C 전역 반납기한 설정
     private void handleSetReturnDeadline() {
         System.out.println("--------------------------------------------------------------------------");
-        System.out.println(" 반납 기한 설정");
+        System.out.println(" 반납 기한 설정 화면");
         System.out.println("--------------------------------------------------------------------------");
         System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-12-31");
 

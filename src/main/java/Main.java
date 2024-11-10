@@ -87,38 +87,48 @@ public class Main {
             return;
         }
 
-        System.out.println("--------------------------------------------------------------------------");
-        System.out.println(" 로그인 화면");
-        System.out.println("--------------------------------------------------------------------------");
+        while (true) {
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println(" 로그인 화면");
+            System.out.println("--------------------------------------------------------------------------");
 
-        System.out.print("아이디: ");
-        String id = scanner.nextLine();
-        System.out.print("비밀번호: ");
-        String password = scanner.nextLine();
+            System.out.print("아이디: ");
+            String id = scanner.nextLine();
 
-        Account account = accountManager.getAccountById(id);
-        if (account != null && account.authenticate(password)) {
+            System.out.print("비밀번호: ");
+            String password = scanner.nextLine();
+
             System.out.print("로그인 하시겠습니까? (y / 다른 키를 입력하면 초기화면으로 이동합니다.): ");
             String confirm = scanner.nextLine();
-            if ("y".equals(confirm)) {
-                LocalDate currentDate = tempDate;
-                lastAccessRecord.setLastAccessDate(currentDate);
-                lastAccessRecord.saveData();
 
-                if (account instanceof Admin) {
-                    System.out.println("관리자 권한으로 접속합니다. 관리자 메뉴화면으로 이동합니다.");
-                    AdminInterface adminInterface = new AdminInterface((Admin) account);
-                    adminInterface.showMenu();
-                } else if (account instanceof User) {
-                    System.out.println("사용자 권한으로 접속합니다. 사용자 메뉴화면으로 이동합니다.");
-                    UserInterface userInterface = new UserInterface((User) account);
-                    userInterface.showMenu();
+            if ("y".equals(confirm)) {
+                Account account = accountManager.getAccountById(id);
+
+                if (account == null) {
+                    System.out.println("해당하는 아이디가 존재하지 않습니다. 다시 입력해주세요.");
+                } else if (!account.authenticate(password)) {
+                    System.out.println("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                } else {
+                    // Successful login; set the last access date and navigate to the appropriate menu
+                    LocalDate currentDate = tempDate;
+                    lastAccessRecord.setLastAccessDate(currentDate);
+                    lastAccessRecord.saveData();
+
+                    if (account instanceof Admin) {
+                        System.out.println("관리자 권한으로 접속합니다. 관리자 메뉴화면으로 이동합니다.");
+                        AdminInterface adminInterface = new AdminInterface((Admin) account);
+                        adminInterface.showMenu();
+                    } else if (account instanceof User) {
+                        System.out.println("사용자 권한으로 접속합니다. 사용자 메뉴화면으로 이동합니다.");
+                        UserInterface userInterface = new UserInterface((User) account);
+                        userInterface.showMenu();
+                    }
+                    break;
                 }
             } else {
-                System.out.println("초기화면으로 돌아갑니다.");
+                System.out.println("초기화면으로 이동합니다.");
+                break;
             }
-        } else {
-            System.out.println("아이디나 비밀번호가 올바르지 않습니다. 다시 시도해주세요.");
         }
     }
 

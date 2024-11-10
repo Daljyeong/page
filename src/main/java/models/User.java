@@ -74,8 +74,10 @@ public class User extends Account implements Serializable {
     public boolean hasOverdueBooks() {
         LocalDate currentDate = LastAccessRecord.getInstance().getLastAccessDate();
         for (BorrowRecord record : borrowRecords) {
-            if (record.isOverdue(currentDate) && !returnRecords.contains(record)) {
-                return true;
+            if (record.isOverdue(currentDate)) {
+                for (ReturnRecord returnRecord : returnRecords) {
+                    if (returnRecord.getBookId() == record.getBookId()) return true;
+                }
             }
         }
         return false;

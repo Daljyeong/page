@@ -1,4 +1,6 @@
+import manager.AccountManager;
 import manager.BookManager;
+import manager.MemoryAccountManager;
 import manager.MemoryBookManager;
 import models.*;
 import record.*;
@@ -10,6 +12,7 @@ public class UserInterface {
     private User user;
     private Scanner scanner;
     private BookManager bookManager = MemoryBookManager.getInstance();
+    private AccountManager accountManager = MemoryAccountManager.getInstance();
 
     public UserInterface(User user) {
         this.user = user;
@@ -84,7 +87,7 @@ public class UserInterface {
             // 영어가 아닌 문자 포함 여부 검사
             if (keyword.isEmpty()) {
                 System.out.println("검색어를 입력해주세요.");
-            } else if (!keyword.matches("[a-zA-Z\\s]+")) {
+            } else if (!keyword.matches("[a-zA-Z\\s\\d]+")) {
                 System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
             } else {
                 break;
@@ -133,6 +136,11 @@ public class UserInterface {
                 return;
             }
 
+            if (user.hasBorrowedBook(book)) {
+                System.out.println("입력하신 ID에 해당하는 도서를 이미 대출 했습니다. 사용자 메뉴 화면으로 이동합니다.");
+                return;
+            }
+
             if (book.getAvailableCopies() == 0) {
                 System.out.println("대출 가능한 복사본이 없습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
@@ -150,6 +158,7 @@ public class UserInterface {
 
                 user.addBorrowRecord(newBorrowRecord);
                 bookManager.saveData();
+                accountManager.saveData();
                 System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
             } else {
                 System.out.println("대출에 실패했습니다. 사용자 메뉴 화면으로 이동합니다.");
@@ -222,7 +231,7 @@ public class UserInterface {
     }
 
     private boolean isValidBookId(String id) {
-        return id.matches("^[1-9]\\d*$");
+        return id.matches("^(0|[1-9]\\d*)$");
     }
 
     private boolean retryPrompt() {

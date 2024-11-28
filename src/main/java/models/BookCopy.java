@@ -11,10 +11,12 @@ public class BookCopy implements Serializable {
     private int copyId;
     private boolean isBorrowed;
     private LocalDate returnDate;
+    private int bookId;
 
     public BookCopy(int bookId) {
         this.copyId = nextCopyId++;
         this.isBorrowed = false;
+        this.bookId = bookId;
     }
 
     public int getCopyId() {
@@ -38,5 +40,9 @@ public class BookCopy implements Serializable {
     }
     public LocalDate getReturnDate() {
         return returnDate;
+    }
+
+    public int getBookId() {
+        return bookId;
     }
 }

@@ -95,16 +95,17 @@ public class UserInterface {
 
             if (!retryPrompt()) return;
         }
-
         List<Book> results = bookManager.searchBooks(keyword);
         if (results.isEmpty()) {
-            System.out.println("입력하신 키워드에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
+            System.out.println("해당 키워드에 일치하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
         } else {
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("검색 결과:");
             for (Book book : results) {
-                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() +
-                        (book.hasBorrowedCopies() ? " (대출 중)" : ""));
+                List<BookCopy> copies = book.getCopies();
+                for (BookCopy copy : copies) {
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + book.getAuthor());
+                }
             }
             System.out.println("--------------------------------------------------------------------------");
         }
@@ -121,7 +122,7 @@ public class UserInterface {
         }
 
         while (true) {
-            System.out.print("대출할 도서의 ID를 입력하세요: ");
+            System.out.print("대출할 도서 사본의 ID를 입력하세요: ");
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
@@ -129,40 +130,29 @@ public class UserInterface {
                 continue;
             }
 
-            int bookId = Integer.parseInt(inputId);
-            Book book = bookManager.getBookById(bookId);
-            if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본이 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            if (user.hasBorrowedBook(book)) {
-                System.out.println("입력하신 ID에 해당하는 도서를 이미 대출 했습니다. 사용자 메뉴 화면으로 이동합니다.");
+            if (user.hasBorrowedBook(bookCopy)) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본을 이미 대출 했습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            if (book.getAvailableCopies() == 0) {
-                System.out.println("대출 가능한 복사본이 없습니다. 사용자 메뉴 화면으로 이동합니다.");
-                return;
+            user.borrowBook(bookCopy.getCopyId());
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),LastAccessRecord.getInstance().getLastAccessDate());
+
+            if (bookCopy.getReturnDate() != null) {
+                newBorrowRecord.setReturnDate(bookCopy.getReturnDate());
             }
 
-            BookCopy copy = book.borrowAvailableCopy();
-            if (copy != null) {
-                user.borrowBook(copy.getCopyId());
-                BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookId, copy.getCopyId(),LastAccessRecord.getInstance().getLastAccessDate());
-
-                //todo
-                if (copy.getReturnDate() != null) {
-                    newBorrowRecord.setReturnDate(copy.getReturnDate());
-                }
-
-                user.addBorrowRecord(newBorrowRecord);
-                bookManager.saveData();
-                accountManager.saveData();
-                System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
-            } else {
-                System.out.println("대출에 실패했습니다. 사용자 메뉴 화면으로 이동합니다.");
-            }
+            user.addBorrowRecord(newBorrowRecord);
+            bookManager.saveData();
+            accountManager.saveData();
+            System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
             return;
         }
     }
@@ -172,7 +162,7 @@ public class UserInterface {
         System.out.println(" 도서 반납 화면");
         System.out.println("--------------------------------------------------------------------------");
         while (true) {
-            System.out.print("반납할 도서의 ID를 입력하세요: ");
+            System.out.print("반납할 도서 사본의 ID를 입력하세요: ");
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
@@ -180,23 +170,24 @@ public class UserInterface {
                 continue;
             }
 
-            int bookId = Integer.parseInt(inputId);
-            Book book = bookManager.getBookById(bookId);
-            if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본이 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            if (!user.hasBorrowedBook(book)) {
-                System.out.println("해당 도서는 귀하가 대출한 도서가 아닙니다.");
+            if (!user.hasBorrowedBook(bookCopy)) {
+                System.out.println("해당 도서 사본은 귀하가 대출한 도서가 아닙니다.");
                 return;
             }
 
-            user.returnBook(bookId);
-            bookManager.saveData();
-            ReturnRecord newReturnRecord = new ReturnRecord(user.getId(), bookId, LastAccessRecord.getInstance().getLastAccessDate());
+            user.returnBook(bookCopy.getCopyId());
+            ReturnRecord newReturnRecord = new ReturnRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(), LastAccessRecord.getInstance().getLastAccessDate());
             user.addReturnRecord(newReturnRecord);
             System.out.println("도서 반납이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
+            bookManager.saveData();
+            accountManager.saveData();
             return;
         }
     }
@@ -206,7 +197,7 @@ public class UserInterface {
         System.out.println(" 대출 현황 확인 화면");
         System.out.println("--------------------------------------------------------------------------");
         while (true) {
-            System.out.print("대출 현황을 확인할 도서의 ID를 입력하세요: ");
+            System.out.print("대출 현황을 확인할 도서 사본의 ID를 입력하세요: ");
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
@@ -214,17 +205,17 @@ public class UserInterface {
                 continue;
             }
 
-            int bookId = Integer.parseInt(inputId);
-            Book book = bookManager.getBookById(bookId);
-            if (book == null) {
-                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본이 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            if (book.getAvailableCopies() > 0) {
-                System.out.println("검색하신 도서는 대출이 가능합니다. 사용자 메뉴 화면으로 이동합니다.");
+            if (!bookCopy.isBorrowed()) {
+                System.out.println("검색하신 도서 사본이 대출이 가능합니다. 사용자 메뉴 화면으로 이동합니다.");
             } else {
-                System.out.println("검색하신 도서는 이미 대출 중입니다. 사용자 메뉴 화면으로 이동합니다.");
+                System.out.println("검색하신 도서 사본이 이미 대출 중입니다. 사용자 메뉴 화면으로 이동합니다.");
             }
             return;
         }

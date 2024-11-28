@@ -173,6 +173,7 @@ public class AdminInterface {
         System.out.println("--------------------------------------------------------------------------");
 
         int bookId;
+        //todo 보강 사항
         while (true) {
             System.out.print("사본을 추가할 도서의 ID를 입력하세요: ");
             String input = scanner.nextLine().trim();
@@ -218,7 +219,7 @@ public class AdminInterface {
         System.out.println(" 도서 삭제 화면");
         System.out.println("--------------------------------------------------------------------------");
         while (true) {
-            System.out.print("삭제할 도서 ID를 입력하세요: ");
+            System.out.print("삭제할 도서 사본 ID를 입력하세요: ");
             String inputId = scanner.nextLine();
             if (!isValidBookId(inputId)) {
                 System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
@@ -227,27 +228,27 @@ public class AdminInterface {
                 continue;
             }
 
-            int bookId = Integer.parseInt(inputId);
-            Book book = bookManager.getBookById(bookId);
-            if (book == null) {
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
                 System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
                 System.out.println("관리자 메뉴 화면으로 이동합니다.");
                 return;
             }
             System.out.println("--------------------------------------------------------------------------");
-            System.out.println("삭제할 도서: " + book.getTitle() + ", " + book.getAuthor());
-            if (book.hasBorrowedCopies()) {
-                System.out.println("해당 도서에 대출 중인 사본이 있어 삭제할 수 없습니다.");
+            System.out.println("삭제할 도서 사본: " + bookCopy.getBookId() + ", " + bookCopy.getCopyId());
+            if (bookCopy.isBorrowed()) {
+                System.out.println("해당 도서 사본은 대출중입니다. 삭제할 수 없습니다.");
                 System.out.println("관리자 메뉴 화면으로 이동합니다.");
                 return;
             }
 
-            System.out.print("도서를 삭제하시겠습니까? (y / 다른 키를 입력하면 취소하고 관리자 메뉴로 이동합니다.): ");
+            System.out.print("도서 사본을 삭제하시겠습니까? (y / 다른 키를 입력하면 취소하고 관리자 메뉴로 이동합니다.): ");
             String confirm = scanner.nextLine();
             if ("y".equals(confirm)) {
-                bookManager.removeBook(bookId);
+                bookManager.removeBookCopy(bookCopyId);
                 bookManager.saveData();
-                System.out.println("도서가 성공적으로 삭제되었습니다. 관리자 메뉴 화면으로 이동합니다.");
+                System.out.println("도서 사본이 성공적으로 삭제되었습니다. 관리자 메뉴 화면으로 이동합니다.");
                 return;
             } else {
                 System.out.println("도서 삭제를 취소하였습니다. 관리자 메뉴 화면으로 이동합니다.");
@@ -278,16 +279,17 @@ public class AdminInterface {
 
             if (!retryPrompt()) return;
         }
-
         List<Book> results = bookManager.searchBooks(keyword);
         if (results.isEmpty()) {
-            System.out.println("해당 키워드에 일치하는 도서가 존재하지 않습니다.");
+            System.out.println("해당 키워드에 일치하는 도서가 존재하지 않습니다. 관리자 메뉴 화면으로 이동합니다.");
         } else {
             System.out.println("--------------------------------------------------------------------------");
             System.out.println("검색 결과:");
             for (Book book : results) {
-                int availableCopies = book.getAvailableCopies();
-                System.out.println(book.getId() + ": " + book.getTitle() + " by " + book.getAuthor() + " (사본 수량: " + availableCopies + ")");
+                List<BookCopy> copies = book.getCopies();
+                for (BookCopy copy : copies) {
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + book.getAuthor());
+                }
             }
             System.out.println("--------------------------------------------------------------------------");
         }

@@ -59,15 +59,34 @@ public class MemoryBookManager implements Serializable, BookManager {
         saveData();
     }
 
-    // 도서 삭제 메서드
-    public void removeBook(int id) {
-        books.remove(id);
-        saveData(); // 도서 삭제 시 저장
+    // 도서 사본 삭제 메서드
+    public void removeBookCopy(int copyId) {
+        for (Book book : books.values()) {
+            List<BookCopy> copies = book.getCopies();
+            for (int i = 0; i < copies.size(); i++) {
+                if (copies.get(i).getCopyId() == copyId) {
+                    copies.remove(i);
+                    saveData(); // 도서 사본 삭제 시 저장
+                    return;
+                }
+            }
+        }
     }
 
     // 도서 ID로 검색
     public Book getBookById(int id) {
         return books.get(id);
+    }
+
+    public BookCopy getBookCopyById(int bookCopyId) {
+        for (Book book : books.values()) {
+            for (BookCopy copy : book.getCopies()) {
+                if (copy.getCopyId() == bookCopyId) {
+                    return copy;
+                }
+            }
+        }
+        return null;
     }
 
     // 제목 또는 저자로 도서 검색

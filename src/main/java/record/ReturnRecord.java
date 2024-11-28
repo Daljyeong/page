@@ -7,11 +7,13 @@ public class ReturnRecord implements Serializable {
     private static final long serialVersionUID = 1L;
     private String userId;
     private int bookId;
+    private int copyId;
     private LocalDate returnDate;
 
-    public ReturnRecord(String userId, int bookId, LocalDate returnDate) {
+    public ReturnRecord(String userId, int bookId, int copyId, LocalDate returnDate) {
         this.userId = userId;
         this.bookId = bookId;
+        this.copyId = copyId;
         this.returnDate = returnDate;
     }
 
@@ -20,8 +22,8 @@ public class ReturnRecord implements Serializable {
         return userId;
     }
 
-    public int getBookId() {
-        return bookId;
+    public int getCopyId() {
+        return copyId;
     }
 
     public LocalDate getReturnDate() {
@@ -33,6 +35,7 @@ public class ReturnRecord implements Serializable {
         return "ReturnRecord{" +
                 ", userId='" + userId + '\'' +
                 ", bookId='" + bookId + '\'' +
+                ", copyId='" + copyId + '\'' +
                 ", returnDate=" + returnDate +
                 '}';
     }

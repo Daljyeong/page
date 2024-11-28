@@ -39,14 +39,8 @@ public class User extends Account implements Serializable {
     }
 
     //todo 특정 도서 복사본을 이미 대출했는지 확인
-    public boolean hasBorrowedBook(Book book) {
-        List<BookCopy> copies = book.getCopies();
-        for (BookCopy copy : copies) {
-            if (borrowedCopyIds.contains(copy.getCopyId())) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasBorrowedBook(BookCopy bookCopy) {
+        return borrowedCopyIds.contains(bookCopy.getCopyId());
     }
 
     // 도서 대출 기록 추가

@@ -1,6 +1,7 @@
 package manager;
 
 import models.Book;
+import models.BookCopy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,7 +11,7 @@ public interface BookManager {
     public Book addBook(String title, String author, int quantity);
 
     // 도서 삭제 메서드
-    public void removeBook(int id);
+    public void removeBookCopy(int copyId);
 
     // 도서 ID로 검색
     public Book getBookById(int id);
@@ -19,7 +20,8 @@ public interface BookManager {
     public List<Book> searchBooks(String keyword);
     // 모든 도서 로드
 
-
+    public BookCopy getBookCopyById(int bookCopyId);
+    
     public void loadData();
 
     // 모든 도서 저장

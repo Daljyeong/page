@@ -24,9 +24,6 @@ public class BorrowRecord implements Serializable {
         return userId;
     }
 
-    public int getBookId() {
-        return bookId;
-    }
 
     public int getCopyId() {
         return copyId;

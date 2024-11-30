@@ -70,7 +70,7 @@ public class User extends Account implements Serializable {
         for (BorrowRecord record : borrowRecords) {
             if (record.isOverdue(currentDate)) {
                 for (ReturnRecord returnRecord : returnRecords) {
-                    if (returnRecord.getBookId() == record.getBookId()) return true;
+                    if (returnRecord.getCopyId() == record.getCopyId()) return true;
                 }
             }
         }

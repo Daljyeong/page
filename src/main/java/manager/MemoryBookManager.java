@@ -14,6 +14,8 @@ public class MemoryBookManager implements Serializable, BookManager {
     private int nextId = 1000; // 도서 ID 자동 증가
     private final String FILE_PATH = "books.post";
 
+    private int returnPeriod = 0;
+
     private MemoryBookManager() {
         books = new HashMap<>();
     }
@@ -47,16 +49,9 @@ public class MemoryBookManager implements Serializable, BookManager {
         return book;
     }
 
-    //todo 도서 반납기한 설정 모든 book의 모든 bookCopy에 대해서 반납기한 설정
-    public void setBookReturnDate(LocalDate returnDate){
-        for (Book existingBook : books.values()) {
-            for (BookCopy copy: existingBook.getCopies()){
-                if (!copy.isBorrowed()){
-                    copy.setReturnDate(returnDate);
-                }
-            }
-        }
-        saveData();
+    // 도서 반납기한 설정
+    public void setReturnPeriod(int returnPeriod){
+        this.returnPeriod = returnPeriod;
     }
 
     // 도서 사본 삭제 메서드
@@ -129,5 +124,10 @@ public class MemoryBookManager implements Serializable, BookManager {
         } catch (IOException e) {
             System.out.println("도서 데이터를 저장하는 중 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+
+
+    public int getReturnPeriod() {
+        return returnPeriod;
     }
 }

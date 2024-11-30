@@ -80,13 +80,13 @@ public class AdminInterface {
         System.out.println(" 반납 기한 설정 화면");
         System.out.println("--------------------------------------------------------------------------");
 
-        int returnPeriod = 0;
+        int borrowPeriod = 0;
 
         // 반납 기한 입력 처리
         while (true) {
             System.out.print("반납 기한(일수)를 정수 형태로 입력하세요. : ");
             try {
-                returnPeriod = scanner.nextInt(); // 정수 입력
+                borrowPeriod = scanner.nextInt(); // 정수 입력
                 scanner.nextLine(); // 버퍼 비우기
                 break;
             } catch (Exception e) {
@@ -100,8 +100,8 @@ public class AdminInterface {
         System.out.print("반납기한을 설정 하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String confirm = scanner.nextLine(); // 입력받기
         if ("y".equalsIgnoreCase(confirm)) { // 대소문자 무시 비교
-            bookManager.setReturnPeriod(returnPeriod);
-            System.out.println("반납 기한이 설정되었습니다. (" + returnPeriod + "일)");
+            bookManager.setBorrowPeriod(borrowPeriod);
+            System.out.println("반납 기한이 설정되었습니다. (" + borrowPeriod + "일)");
         } else {
             System.out.println("관리자 메뉴 화면으로 이동합니다.");
         }

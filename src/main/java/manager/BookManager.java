@@ -27,9 +27,9 @@ public interface BookManager {
     public void saveData();
 
     // 반납 기한 설정
-    void setReturnPeriod(int returnPeriod);
+    void setBorrowPeriod(int borrowPeriod);
 
-    int getReturnPeriod();
+    int getBorrowPeriod();
 
 
 }

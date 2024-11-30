@@ -1,7 +1,6 @@
 package manager;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import models.*;
@@ -14,7 +13,7 @@ public class MemoryBookManager implements Serializable, BookManager {
     private int nextId = 1000; // 도서 ID 자동 증가
     private final String FILE_PATH = "books.post";
 
-    private int returnPeriod = 0;
+    private int borrowPeriod = 7; // 최초 기본 7일
 
     private MemoryBookManager() {
         books = new HashMap<>();
@@ -50,8 +49,8 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     // 도서 반납기한 설정
-    public void setReturnPeriod(int returnPeriod){
-        this.returnPeriod = returnPeriod;
+    public void setBorrowPeriod(int borrowPeriod){
+        this.borrowPeriod = borrowPeriod;
     }
 
     // 도서 사본 삭제 메서드
@@ -127,7 +126,7 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
 
-    public int getReturnPeriod() {
-        return returnPeriod;
+    public int getBorrowPeriod() {
+        return borrowPeriod;
     }
 }

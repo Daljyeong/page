@@ -147,12 +147,12 @@ public class UserInterface {
             LocalDate borrowDate = LastAccessRecord.getInstance().getLastAccessDate();
 
             // 반납 기한 지정 (설정된 기본 대출 기간)
-            int returnPeriod = bookManager.getReturnPeriod();
-            LocalDate returnDate = borrowDate.plusDays(returnPeriod);
+            int borrowPeriod = bookManager.getBorrowPeriod();
+            LocalDate scheduledReturnDate = borrowDate.plusDays(borrowPeriod);
 
 
             user.borrowBook(bookCopy.getCopyId());
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, returnDate);
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, scheduledReturnDate);
 
             user.addBorrowRecord(newBorrowRecord);
             bookManager.saveData();
@@ -160,7 +160,7 @@ public class UserInterface {
 
             // 로그 테스트용
             System.out.println("대출 시작일: " + newBorrowRecord.getBorrowDate()); // 디버깅용
-            System.out.println("반납 예정일: " + newBorrowRecord.getReturnDate()); // 디버깅용
+            System.out.println("반납 예정일: " + newBorrowRecord.getScheduledReturnDate()); // 디버깅용
 
             System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
             return;

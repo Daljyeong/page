@@ -50,7 +50,7 @@ public class BorrowRecord implements Serializable {
 
     //todo 반납기한 넘었는지 검사하는 책임
     public boolean isOverdue(LocalDate currentDate) {
-        return currentDate.isAfter(this.returnDate);  // 반납 기한(dueDate)을 넘어섰는지 확인
+        return currentDate.isAfter(this.scheduledReturnDate);  // 반납 기한(dueDate)을 넘어섰는지 확인
         // ScheduledReturnDate 로 바껴야하는 거 아닌가?
     }
 

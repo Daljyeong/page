@@ -155,10 +155,8 @@ public class UserInterface {
             // 반납 기한 지정 (설정된 기본 대출 기간)
             int borrowPeriod = bookManager.getBorrowPeriod();
             LocalDate scheduledReturnDate = borrowDate.plusDays(borrowPeriod);
-
-
-            user.borrowBook(bookCopy.getCopyId());
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(), borrowDate, scheduledReturnDate);
+            bookCopy.borrow();
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, scheduledReturnDate);
 
             user.addBorrowRecord(newBorrowRecord);
             bookManager.saveData();
@@ -198,7 +196,7 @@ public class UserInterface {
                 return;
             }
 
-            user.returnBook(bookCopy.getCopyId());
+            bookCopy.returned();
             ReturnRecord newReturnRecord = new ReturnRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(), LastAccessRecord.getInstance().getLastAccessDate());
             user.addReturnRecord(newReturnRecord);
             System.out.println("도서 반납이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");

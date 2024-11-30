@@ -105,9 +105,11 @@ public class Main {
                 Account account = accountManager.getAccountById(id);
 
                 if (account == null) {
-                    System.out.println("해당하는 아이디가 존재하지 않습니다. 다시 입력해주세요.");
+                    System.out.println("해당하는 아이디가 존재하지 않습니다. 초기화면으로 이동합니다.");
+                    return;
                 } else if (!account.authenticate(password)) {
-                    System.out.println("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                    System.out.println("비밀번호가 일치하지 않습니다. 초기화면으로 이동합니다.");
+                    return;
                 } else {
                     // Successful login; set the last access date and navigate to the appropriate menu
                     LocalDate currentDate = tempDate;
@@ -125,9 +127,6 @@ public class Main {
                     }
                     break;
                 }
-            } else {
-                System.out.println("초기화면으로 이동합니다.");
-                break;
             }
         }
     }

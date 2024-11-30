@@ -7,6 +7,7 @@ import record.*;
 
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class UserInterface {
     private User user;
@@ -142,16 +143,25 @@ public class UserInterface {
                 return;
             }
 
-            user.borrowBook(bookCopy.getCopyId());
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),LastAccessRecord.getInstance().getLastAccessDate());
+            // 대출 시작일 지정
+            LocalDate borrowDate = LastAccessRecord.getInstance().getLastAccessDate();
 
-            if (bookCopy.getReturnDate() != null) {
-                newBorrowRecord.setReturnDate(bookCopy.getReturnDate());
-            }
+            // 반납 기한 지정 (설정된 기본 대출 기간)
+            int returnPeriod = bookManager.getReturnPeriod();
+            LocalDate returnDate = borrowDate.plusDays(returnPeriod);
+
+
+            user.borrowBook(bookCopy.getCopyId());
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, returnDate);
 
             user.addBorrowRecord(newBorrowRecord);
             bookManager.saveData();
             accountManager.saveData();
+
+            // 로그 테스트용
+            System.out.println("대출 시작일: " + newBorrowRecord.getBorrowDate()); // 디버깅용
+            System.out.println("반납 예정일: " + newBorrowRecord.getReturnDate()); // 디버깅용
+
             System.out.println("도서 대출이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
             return;
         }

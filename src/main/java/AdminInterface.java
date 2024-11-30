@@ -2,9 +2,6 @@ import manager.BookManager;
 import manager.MemoryBookManager;
 import models.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -82,29 +79,29 @@ public class AdminInterface {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 반납 기한 설정 화면");
         System.out.println("--------------------------------------------------------------------------");
-        System.out.println("날짜는 'YYYY-MM-DD' 형식이어야 합니다. 예: 2024-12-31");
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate returnDate;
+        int returnPeriod = 0;
+
+        // 반납 기한 입력 처리
         while (true) {
-            System.out.print("반납 기한을 입력하세요: ");
-            String inputDate = scanner.nextLine().trim();
+            System.out.print("반납 기한(일수)를 정수 형태로 입력하세요. : ");
             try {
-                returnDate = LocalDate.parse(inputDate, dateFormatter); // 전역 반납 기한 설정
+                returnPeriod = scanner.nextInt(); // 정수 입력
+                scanner.nextLine(); // 버퍼 비우기
                 break;
-            } catch (DateTimeParseException e) {
-                System.out.println("올바른 날짜 형식을 입력해주세요. 예: 2024-12-31");
-                //todo 이 부분 추가
+            } catch (Exception e) {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                scanner.nextLine(); // 버퍼 비우기
                 if (!retryPrompt()) return;
             }
         }
 
+        // 확인 입력 처리
         System.out.print("반납기한을 설정 하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
-        String confirm = scanner.nextLine();
-        if ("y".equals(confirm)) {
-            bookManager.setBookReturnDate(returnDate); // 대출 전 도서에 반영
-            System.out.println("모든 대출 전 도서에 대해 반납 기한이 성공적으로 설정되었습니다.");
-            bookManager.saveData();
+        String confirm = scanner.nextLine(); // 입력받기
+        if ("y".equalsIgnoreCase(confirm)) { // 대소문자 무시 비교
+            bookManager.setReturnPeriod(returnPeriod);
+            System.out.println("반납 기한이 설정되었습니다. (" + returnPeriod + "일)");
         } else {
             System.out.println("관리자 메뉴 화면으로 이동합니다.");
         }

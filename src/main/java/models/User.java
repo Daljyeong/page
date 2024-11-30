@@ -45,11 +45,13 @@ public class User extends Account implements Serializable {
 
     // 도서 대출 기록 추가
     public void addBorrowRecord(BorrowRecord newBorrowRecord) {
+        borrowBook(newBorrowRecord.getCopyId());
         this.borrowRecords.add(newBorrowRecord);
     }
 
     // 도서 반납 기록 추가
     public void addReturnRecord(ReturnRecord newReturnRecord) {
+        returnBook(newReturnRecord.getCopyId());
         this.returnRecords.add(newReturnRecord);
     }
 

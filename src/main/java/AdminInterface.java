@@ -237,8 +237,6 @@ public class AdminInterface {
     }
 
 
-
-
     private void handleDeleteBook() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 도서 삭제 화면");
@@ -313,7 +311,13 @@ public class AdminInterface {
             for (Book book : results) {
                 List<BookCopy> copies = book.getCopies();
                 for (BookCopy copy : copies) {
-                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + String.join(", ", book.getAuthors()));
+                    // Author 정보를 "name #id" 형식으로 변환
+                    String authors = book.getAuthors().stream()
+                            .map(author -> author.getName() + " #" + author.getId())
+                            .reduce((a, b) -> a + ", " + b)
+                            .orElse("no author");
+
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + authors);
                 }
             }
             System.out.println("--------------------------------------------------------------------------");

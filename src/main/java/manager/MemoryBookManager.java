@@ -3,7 +3,9 @@ package manager;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
+
 import models.*;
+
 import java.util.ArrayList;
 
 public class MemoryBookManager implements Serializable, BookManager {
@@ -19,6 +21,8 @@ public class MemoryBookManager implements Serializable, BookManager {
         books = new HashMap<>();
     }
 
+    private AuthorManager authorManager = new AuthorManager();
+
     public static MemoryBookManager getInstance() {
         if (instance == null) {
             synchronized (MemoryBookManager.class) {
@@ -31,22 +35,39 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     //todo 도서 추가 메서드 (동명 동저자 존재 시 번호 추가)
-    public Book addBook(String title, List<String> authors, int quantity) {
+    public Book addBook(String title, List<String> authorNames, int quantity) {
         int num = 1;
 
-        if (authors.size() > 5) {
+        if (authorNames.size() > 5) {
             throw new IllegalArgumentException("저자는 최대 5명까지만 입력 가능합니다.");
+        }
+
+        // 저자 변환: String -> Author
+        List<Author> authors = new ArrayList<>();
+        for (String authorName : authorNames) {
+            authors.add(authorManager.getOrCreateAuthor(authorName));
         }
 
         // 저자가 없으면 기본값 설정
         if (authors.isEmpty()) {
-            authors.add("no author");
+            authors.add(new Author("no author", -1));
         }
 
         // 동명 동저자 책이 존재하는지 확인
         for (Book existingBook : books.values()) {
-            if (existingBook.getTitle().contains(title)) {
-                num++;  // 동명 동저자 책 존재 시 번호 증가
+            // 제목에서 "(숫자)" 제거
+            String baseTitle = existingBook.getTitle().replaceAll("\\s*\\(\\d+\\)$", "");
+
+            // 기존 저자의 이름 리스트 추출
+            List<String> existingAuthorNames = new ArrayList<>();
+            for (Author author : existingBook.getAuthors()) {
+                existingAuthorNames.add(author.getName());
+            }
+
+            // 제목과 저자 이름 리스트가 동일한지 비교
+            if (baseTitle.equalsIgnoreCase(title) &&
+                    existingAuthorNames.equals(authorNames)) {
+                num++; // 동명 동저자 책 존재 시 번호 증가
             }
         }
 
@@ -58,7 +79,7 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     // 도서 반납기한 설정
-    public void setBorrowPeriod(int borrowPeriod){
+    public void setBorrowPeriod(int borrowPeriod) {
         this.borrowPeriod = borrowPeriod;
     }
 
@@ -98,7 +119,7 @@ public class MemoryBookManager implements Serializable, BookManager {
         String lowerKeyword = keyword.toLowerCase();
         for (Book book : books.values()) {
             if (book.getTitle().toLowerCase().contains(lowerKeyword) ||
-                    book.getAuthors().stream().anyMatch(author -> author.toLowerCase().contains(lowerKeyword))) {
+                    book.getAuthors().stream().anyMatch(author -> author.getName().toLowerCase().contains(lowerKeyword))) {
                 results.add(book);
             }
         }

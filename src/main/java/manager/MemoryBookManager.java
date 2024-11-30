@@ -31,18 +31,27 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     //todo 도서 추가 메서드 (동명 동저자 존재 시 번호 추가)
-    public Book addBook(String title, String author, int quantity) {
+    public Book addBook(String title, List<String> authors, int quantity) {
         int num = 1;
+
+        if (authors.size() > 5) {
+            throw new IllegalArgumentException("저자는 최대 5명까지만 입력 가능합니다.");
+        }
+
+        // 저자가 없으면 기본값 설정
+        if (authors.isEmpty()) {
+            authors.add("no author");
+        }
 
         // 동명 동저자 책이 존재하는지 확인
         for (Book existingBook : books.values()) {
-            if (existingBook.getTitle().contains(title) && existingBook.getAuthor().equalsIgnoreCase(author)) {
+            if (existingBook.getTitle().contains(title)) {
                 num++;  // 동명 동저자 책 존재 시 번호 증가
             }
         }
 
         // Book 생성자에서 num 값 추가
-        Book book = new Book(nextId++, title, author, quantity, num);
+        Book book = new Book(nextId++, title, authors, quantity, num);
         books.put(book.getId(), book);
         saveData(); // 도서 추가 시 저장
         return book;
@@ -89,7 +98,7 @@ public class MemoryBookManager implements Serializable, BookManager {
         String lowerKeyword = keyword.toLowerCase();
         for (Book book : books.values()) {
             if (book.getTitle().toLowerCase().contains(lowerKeyword) ||
-                    book.getAuthor().toLowerCase().contains(lowerKeyword)) {
+                    book.getAuthors().stream().anyMatch(author -> author.toLowerCase().contains(lowerKeyword))) {
                 results.add(book);
             }
         }

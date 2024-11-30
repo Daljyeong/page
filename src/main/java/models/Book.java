@@ -10,13 +10,13 @@ public class Book implements Serializable {
 
     private int id;
     private String title;
-    private String author;
+    private List<String> authors;
     private List<BookCopy> copies;
 
-    public Book(int id, String title, String author, int quantity, int num) {
+    public Book(int id, String title, List<String> authors, int quantity, int num) {
         this.id = id;
         this.title = title + " (" + num + ")";
-        this.author = author;
+        this.authors = authors.isEmpty() ? List.of("no author") : new ArrayList<>(authors);
         this.copies = new ArrayList<>();
         addCopies(quantity);  // 초기 복사본 생성
     }
@@ -30,8 +30,8 @@ public class Book implements Serializable {
         return title;
     }
 
-    public String getAuthor() {
-        return author;
+    public List<String> getAuthors() {
+        return new ArrayList<>(authors);
     }
 
     public List<BookCopy> getCopies() {

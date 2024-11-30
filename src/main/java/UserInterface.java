@@ -105,7 +105,7 @@ public class UserInterface {
             for (Book book : results) {
                 List<BookCopy> copies = book.getCopies();
                 for (BookCopy copy : copies) {
-                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + book.getAuthor());
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + String.join(", ", book.getAuthors()));
                 }
             }
             System.out.println("--------------------------------------------------------------------------");

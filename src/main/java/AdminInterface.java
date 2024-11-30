@@ -2,6 +2,7 @@ import manager.BookManager;
 import manager.MemoryBookManager;
 import models.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -125,15 +126,41 @@ public class AdminInterface {
             }
         }
 
-        String author;
+        int authorCount = 0;
         while (true) {
-            System.out.print("도서 저자: ");
-            author = scanner.nextLine().trim();
-            if (!author.isEmpty() && author.matches("^[a-zA-Z ]+$")) { // 영어만 허용
-                break;
+            System.out.print("저자가 몇 명인지 입력하세요 (최대 5명): ");
+
+            String authors = scanner.nextLine().trim();
+            if (!authors.isEmpty() && authors.matches("^\\d+$")) { // 숫자만 입력
+                authorCount = Integer.parseInt(authors);
+                if (authorCount >= 0 && authorCount <= 5) {
+                    break;
+                } else {
+                    System.out.println("저자는 0에서 5명까지 입력해주세요.");
+                    if (!retryPrompt()) return;
+                }
             } else {
-                System.out.println("잘못된 입력입니다. (영어 형태로 입력해주세요.)");
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
                 if (!retryPrompt()) return;
+            }
+        }
+
+        List<String> authors = new ArrayList<>();
+        if (authorCount == 0) {
+            System.out.println("저자가 없으므로 저자 명을 'no author'로 설정합니다.");
+        } else {
+            System.out.println("저자의 이름을 입력하세요. 각 이름 입력 후 Enter를 눌러주세요:");
+            for (int i = 0; i < authorCount; i++) {
+                while (true) {
+                    System.out.print((i + 1) + "번째 저자 이름: ");
+                    String author = scanner.nextLine().trim();
+                    if (!author.isEmpty() && author.matches("^[a-zA-Z\\s]+$")) { // 영어만 허용
+                        authors.add(author);
+                        break;
+                    } else {
+                        System.out.println("잘못된 입력입니다. 저자의 이름은 영어만 입력 가능합니다.");
+                    }
+                }
             }
         }
 
@@ -152,10 +179,11 @@ public class AdminInterface {
             if (!retryPrompt()) return;
         }
 
+        System.out.println("--------------------------------------------------------------------------");
         System.out.print("도서를 추가하시겠습니까? (y / 다른 키를 입력하면 관리자 메뉴 화면으로 이동합니다.): ");
         String confirm = scanner.nextLine();
         if ("y".equals(confirm)) {
-            Book newBook = bookManager.addBook(title, author, quantity);
+            Book newBook = bookManager.addBook(title, authors, quantity);
             bookManager.saveData();
             System.out.println("도서가 성공적으로 추가되었습니다. 도서 ID는 [" + newBook.getId() + "]입니다.");
         } else {
@@ -285,7 +313,7 @@ public class AdminInterface {
             for (Book book : results) {
                 List<BookCopy> copies = book.getCopies();
                 for (BookCopy copy : copies) {
-                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + book.getAuthor());
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + String.join(", ", book.getAuthors()));
                 }
             }
             System.out.println("--------------------------------------------------------------------------");

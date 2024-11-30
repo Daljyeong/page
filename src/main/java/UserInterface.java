@@ -105,7 +105,13 @@ public class UserInterface {
             for (Book book : results) {
                 List<BookCopy> copies = book.getCopies();
                 for (BookCopy copy : copies) {
-                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + String.join(", ", book.getAuthors()));
+                    // Author 정보를 "name #id" 형식으로 변환
+                    String authors = book.getAuthors().stream()
+                            .map(author -> author.getName() + " #" + author.getId())
+                            .reduce((a, b) -> a + ", " + b)
+                            .orElse("no author");
+
+                    System.out.println("사본ID: " + copy.getCopyId() + " - 도서ID: " + book.getId() + " - " + book.getTitle() + " - " + authors);
                 }
             }
             System.out.println("--------------------------------------------------------------------------");
@@ -152,7 +158,7 @@ public class UserInterface {
 
 
             user.borrowBook(bookCopy.getCopyId());
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, scheduledReturnDate);
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(), borrowDate, scheduledReturnDate);
 
             user.addBorrowRecord(newBorrowRecord);
             bookManager.saveData();

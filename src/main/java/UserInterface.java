@@ -161,7 +161,7 @@ public class UserInterface {
             int borrowPeriod = bookManager.getBorrowPeriod();
             LocalDate scheduledReturnDate = borrowDate.plusDays(borrowPeriod);
             bookCopy.borrow();
-            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(),borrowDate, scheduledReturnDate);
+            BorrowRecord newBorrowRecord = new BorrowRecord(user.getId(), bookCopy.getBookId(), bookCopy.getCopyId(), borrowDate, scheduledReturnDate);
 
             user.addBorrowRecord(newBorrowRecord);
             bookManager.saveData();
@@ -266,45 +266,49 @@ public class UserInterface {
                 return;
             }
 
-            // 도서 연혁 출력
-            System.out.println("--------------------------------------------------------------------------");
-            Book book = bookManager.getBookById(bookCopy.getBookId());
-            String authors = book.getAuthors().stream()
-                    .map(Author::getName)
-                    .reduce((a, b) -> a + ", " + b)
-                    .orElse("no author");
-            System.out.printf("도서: %s (저자: %s)%n", book.getTitle(), authors);
+            // 삭제일 출력
+            LocalDate deletedDate = bookCopy.getDeletedDate();
+            if (deletedDate != null) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본은 삭제되었습니다.");
+            } else {           // 도서 연혁 출력
+                System.out.println("--------------------------------------------------------------------------");
+                Book book = bookManager.getBookById(bookCopy.getBookId());
+                String authors = book.getAuthors().stream()
+                        .map(Author::getName)
+                        .reduce((a, b) -> a + ", " + b)
+                        .orElse("no author");
+                System.out.printf("도서: %s (저자: %s)%n", book.getTitle(), authors);
 
-            // 입고일 출력
-            System.out.printf("입고일: %s%n", bookCopy.getAddedDate() != null ? bookCopy.getAddedDate() : "알 수 없음");
+                // 입고일 출력
+                System.out.printf("입고일: %s%n", bookCopy.getAddedDate() != null ? bookCopy.getAddedDate() : "알 수 없음");
 
-            // 대출/반납 기록 출력
-            System.out.println("대출/반납 기록:");
-            List<BorrowRecord> borrowRecords = bookManager.getBorrowRecordsByCopyId(bookCopyId);
-            List<ReturnRecord> returnRecords = bookManager.getReturnRecordsByCopyId(bookCopyId);
+                // 대출/반납 기록 출력
+                System.out.println("대출/반납 기록:");
+                List<BorrowRecord> borrowRecords = bookManager.getBorrowRecordsByCopyId(bookCopyId);
+                List<ReturnRecord> returnRecords = bookManager.getReturnRecordsByCopyId(bookCopyId);
 
-            for (BorrowRecord borrowRecord : borrowRecords) {
-                System.out.println("[대출]");
-                System.out.printf("- 대출자 ID: %s%n", borrowRecord.getUserId());
-                System.out.printf("- 대출 날짜: %s%n", borrowRecord.getBorrowDate());
-                System.out.printf("- 반납 기한: %s%n", borrowRecord.getScheduledReturnDate());
+                for (BorrowRecord borrowRecord : borrowRecords) {
+                    System.out.println("[대출]");
+                    System.out.printf("- 대출자 ID: %s%n", borrowRecord.getUserId());
+                    System.out.printf("- 대출 날짜: %s%n", borrowRecord.getBorrowDate());
+                    System.out.printf("- 반납 기한: %s%n", borrowRecord.getScheduledReturnDate());
 
-                // 대응되는 반납 기록 확인
-                ReturnRecord correspondingReturnRecord = returnRecords.stream()
-                        .filter(returnRecord -> returnRecord.getCopyId() == borrowRecord.getCopyId() &&
-                                !returnRecord.getReturnDate().isBefore(borrowRecord.getBorrowDate()))
-                        .findFirst()
-                        .orElse(null);
+                    // 대응되는 반납 기록 확인
+                    ReturnRecord correspondingReturnRecord = returnRecords.stream()
+                            .filter(returnRecord -> returnRecord.getCopyId() == borrowRecord.getCopyId() &&
+                                    !returnRecord.getReturnDate().isBefore(borrowRecord.getBorrowDate()))
+                            .findFirst()
+                            .orElse(null);
 
-                if (correspondingReturnRecord != null) {
-                    System.out.println("[반납]");
-                    System.out.printf("- 반납 날짜: %s%n", correspondingReturnRecord.getReturnDate());
-                } else {
-                    System.out.println("- 현재 대출 중");
+                    if (correspondingReturnRecord != null) {
+                        System.out.println("[반납]");
+                        System.out.printf("- 반납 날짜: %s%n", correspondingReturnRecord.getReturnDate());
+                    } else {
+                        System.out.println("- 현재 대출 중");
+                    }
                 }
             }
 
-            System.out.println("--------------------------------------------------------------------------");
             System.out.println("사용자 메뉴 화면으로 이동합니다.");
             return;
         }

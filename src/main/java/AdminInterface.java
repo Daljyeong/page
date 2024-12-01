@@ -1,6 +1,8 @@
 import manager.BookManager;
 import manager.MemoryBookManager;
 import models.*;
+import record.BorrowRecord;
+import record.ReturnRecord;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,10 +31,11 @@ public class AdminInterface {
             System.out.println("3. 도서 삭제");
             System.out.println("4. 도서 검색");
             System.out.println("5. 반납 기한 설정");  // 추가된 반납 기한 설정 옵션
-            System.out.println("6. 로그아웃");
+            System.out.println("6. 연혁 열람"); // 추가된 연혁 열람 메뉴
+            System.out.println("7. 로그아웃");
             System.out.println("--------------------------------------------------------------------------");
             System.out.print("원하는 작업의 번호를 입력하세요: ");
-            int choice = getUserChoice(1, 6);
+            int choice = getUserChoice(1, 7);
             switch (choice) {
                 case 1:
                     System.out.println("도서 추가 화면으로 이동합니다.");
@@ -55,6 +58,10 @@ public class AdminInterface {
                     handleSetReturnDeadline();
                     break;
                 case 6:
+                    System.out.println("연혁 열람 화면으로 이동합니다.");
+                    handleBookHistoryRecord();
+                    break;
+                case 7:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
                     return;
                 default:
@@ -78,7 +85,80 @@ public class AdminInterface {
         }
     }
 
-    //todo C 전역 반납기한 설정
+    private void handleBookHistoryRecord(){
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 연혁 열람 화면");
+        System.out.println("--------------------------------------------------------------------------");
+
+        while (true){
+            // 입력 받기
+            System.out.print("연혁을 열람할 도서 사본 ID를 입력하세요: ");
+            String inputId = scanner.nextLine();
+
+            // 잘못된 입력 처리
+            if (!isValidBookId(inputId)) {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
+                continue;
+            }
+
+            // 존재하지 않는 도서
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
+                System.out.println("입력하신 ID에 해당하는 도서가 존재하지 않습니다.");
+                System.out.println("관리자 메뉴 화면으로 이동합니다.");
+                return;
+            }
+
+            // 도서 연혁 출력
+            System.out.println("--------------------------------------------------------------------------");
+            Book book = bookManager.getBookById(bookCopy.getBookId());
+            String authors = book.getAuthors().stream()
+                    .map(Author::getName)
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("no author");
+            System.out.printf("도서: %s (저자: %s)%n", book.getTitle(), authors);
+            // 입고일 출력
+            System.out.printf("입고일: %s%n", bookCopy.getAddedDate() != null ? bookCopy.getAddedDate() : "알 수 없음");
+            // 대출/반납 기록 출력
+            System.out.println("대출/반납 기록:");
+            List<BorrowRecord> borrowRecords = bookManager.getBorrowRecordsByCopyId(bookCopyId);
+            List<ReturnRecord> returnRecords = bookManager.getReturnRecordsByCopyId(bookCopyId);
+            for (BorrowRecord borrowRecord : borrowRecords) {
+                System.out.println("[대출]");
+                System.out.printf("- 대출자 ID: %s%n", borrowRecord.getUserId());
+                System.out.printf("- 대출 날짜: %s%n", borrowRecord.getBorrowDate());
+                System.out.printf("- 반납 기한: %s%n", borrowRecord.getScheduledReturnDate());
+                // 대응되는 반납 기록 확인
+                ReturnRecord correspondingReturnRecord = returnRecords.stream()
+                        .filter(returnRecord -> returnRecord.getCopyId() == borrowRecord.getCopyId() &&
+                                !returnRecord.getReturnDate().isBefore(borrowRecord.getBorrowDate()))
+                        .findFirst()
+                        .orElse(null);
+                if (correspondingReturnRecord != null) {
+                    System.out.println("[반납]");
+                    System.out.printf("- 반납 날짜: %s%n", correspondingReturnRecord.getReturnDate());
+                } else {
+                    System.out.println("- 현재 대출 중");
+                }
+            }
+
+            // 삭제일 출력
+            LocalDate deletedDate = bookCopy.getDeletedDate();
+            if (deletedDate != null) {
+                System.out.printf("삭제일: %s%n", deletedDate);
+            } else {
+                System.out.println("삭제일: 아직 삭제되지 않은 도서 사본입니다.");
+            }
+
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("관리자 메뉴 화면으로 이동합니다.");
+            return;
+        }
+    }
+
+            //todo C 전역 반납기한 설정
     private void handleSetReturnDeadline() {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println(" 반납 기한 설정 화면");
@@ -275,7 +355,7 @@ public class AdminInterface {
             System.out.print("도서 사본을 삭제하시겠습니까? (y / 다른 키를 입력하면 취소하고 관리자 메뉴로 이동합니다.): ");
             String confirm = scanner.nextLine();
             if ("y".equals(confirm)) {
-                bookManager.removeBookCopy(bookCopyId);
+                bookManager.removeBookCopy(bookCopyId, currentDate);
                 bookManager.saveData();
                 System.out.println("도서 사본이 성공적으로 삭제되었습니다. 관리자 메뉴 화면으로 이동합니다.");
                 return;

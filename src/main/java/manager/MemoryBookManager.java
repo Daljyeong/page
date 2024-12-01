@@ -1,6 +1,7 @@
 package manager;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class MemoryBookManager implements Serializable, BookManager {
 
     private List<BorrowRecord> borrowRecords = new ArrayList<>();
     private List<ReturnRecord> returnRecords = new ArrayList<>();
+    private List<BookCopy> deletedCopies = new ArrayList<>();
 
     private MemoryBookManager() {
         books = new HashMap<>();
@@ -89,11 +91,14 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     // 도서 사본 삭제 메서드
-    public void removeBookCopy(int copyId) {
+    public void removeBookCopy(int copyId, LocalDate currentDate) {
         for (Book book : books.values()) {
             List<BookCopy> copies = book.getCopies();
             for (int i = 0; i < copies.size(); i++) {
                 if (copies.get(i).getCopyId() == copyId) {
+                    BookCopy deletedCopy = copies.get(i);
+                    deletedCopy.setDeletedDate(currentDate);
+                    deletedCopies.add(deletedCopy);
                     copies.remove(i);
                     saveData(); // 도서 사본 삭제 시 저장
                     return;
@@ -113,6 +118,12 @@ public class MemoryBookManager implements Serializable, BookManager {
                 if (copy.getCopyId() == bookCopyId) {
                     return copy;
                 }
+            }
+        }
+
+        for (BookCopy copy: deletedCopies){
+            if (copy.getCopyId() == bookCopyId){
+                return copy;
             }
         }
         return null;

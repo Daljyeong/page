@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Book implements Serializable {
         this.title = title + " (" + num + ")";
         this.authors = authors.isEmpty() ? List.of(new Author("no author", -1)) : new ArrayList<>(authors);
         this.copies = new ArrayList<>();
-        addCopies(quantity);  // 초기 복사본 생성
+        addCopies(quantity, null);  // 초기 복사본 생성
     }
 
     // Getter 메서드
@@ -39,9 +40,11 @@ public class Book implements Serializable {
     }
 
     // 새 복사본 추가 메서드
-    public void addCopies(int quantity) {
+    public void addCopies(int quantity, LocalDate addedDate) {
         for (int i = 0; i < quantity; i++) {
-            copies.add(new BookCopy(this.id));
+            BookCopy copy = new BookCopy(this.id);
+            copy.setAddedDate(addedDate); // 입고일 설정
+            copies.add(copy);
         }
     }
 

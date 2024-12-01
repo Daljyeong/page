@@ -2,6 +2,7 @@ import manager.BookManager;
 import manager.MemoryBookManager;
 import models.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,9 +11,11 @@ public class AdminInterface {
     private Admin admin;
     private Scanner scanner;
     private BookManager bookManager = MemoryBookManager.getInstance();
+    private LocalDate currentDate; // 현재 날짜 필드 추가
 
-    public AdminInterface(Admin admin) {
+    public AdminInterface(Admin admin, LocalDate currentDate) {
         this.admin = admin;
+        this.currentDate = currentDate; // 전달받은 날짜 저장
         this.scanner = new Scanner(System.in);
     }
 
@@ -184,6 +187,9 @@ public class AdminInterface {
         String confirm = scanner.nextLine();
         if ("y".equals(confirm)) {
             Book newBook = bookManager.addBook(title, authors, quantity);
+            for (BookCopy copy : newBook.getCopies()) {
+                copy.setAddedDate(currentDate); // 입고일 설정
+            }
             bookManager.saveData();
             System.out.println("도서가 성공적으로 추가되었습니다. 도서 ID는 [" + newBook.getId() + "]입니다.");
         } else {
@@ -231,7 +237,7 @@ public class AdminInterface {
             }
         }
 
-        book.addCopies(copiesToAdd);
+        book.addCopies(copiesToAdd, currentDate);
         bookManager.saveData();
         System.out.println("사본이 성공적으로 추가되었습니다. 관리자 메뉴 화면으로 이동합니다.");
     }

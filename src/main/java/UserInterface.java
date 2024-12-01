@@ -29,10 +29,11 @@ public class UserInterface {
             System.out.println("2. 도서 대출");
             System.out.println("3. 도서 반납");
             System.out.println("4. 대출 현황 확인");
-            System.out.println("5. 로그아웃");
+            System.out.println("5. 연혁 열람");
+            System.out.println("6. 로그아웃");
             System.out.println("--------------------------------------------------------------------------");
             System.out.print("원하는 작업의 번호를 입력하세요: ");
-            int choice = getUserChoice(1, 5);
+            int choice = getUserChoice(1, 6);
             switch (choice) {
                 case 1:
                     System.out.println("도서 검색 화면으로 이동합니다.");
@@ -51,6 +52,10 @@ public class UserInterface {
                     handleViewBorrowedBooks();
                     break;
                 case 5:
+                    System.out.println("연혁 열람 화면으로 이동합니다.");
+                    handleBookHistoryRecord();
+                    break;
+                case 6:
                     System.out.println("로그아웃하고 초기화면으로 이동합니다.");
                     return;
                 default:
@@ -162,6 +167,9 @@ public class UserInterface {
             bookManager.saveData();
             accountManager.saveData();
 
+            // 대출 시 기록
+            bookManager.addBorrowRecord(newBorrowRecord);
+
             // 로그 테스트용
             System.out.println("대출 시작일: " + newBorrowRecord.getBorrowDate()); // 디버깅용
             System.out.println("반납 예정일: " + newBorrowRecord.getScheduledReturnDate()); // 디버깅용
@@ -202,6 +210,9 @@ public class UserInterface {
             System.out.println("도서 반납이 성공적으로 완료되었습니다. 사용자 메뉴 화면으로 이동합니다.");
             bookManager.saveData();
             accountManager.saveData();
+
+            // 반납 시 기록
+            bookManager.addReturnRecord(newReturnRecord);
             return;
         }
     }
@@ -234,6 +245,71 @@ public class UserInterface {
             return;
         }
     }
+
+    private void handleBookHistoryRecord() {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println(" 연혁 열람 화면");
+        System.out.println("--------------------------------------------------------------------------");
+        while (true) {
+            System.out.print("연혁을 열람할 도서 사본의 ID를 입력하세요: ");
+            String inputId = scanner.nextLine();
+            if (!isValidBookId(inputId)) {
+                System.out.println("잘못된 입력입니다. (정수 형태로 입력해주세요.)");
+                if (!retryPrompt()) return;
+                continue;
+            }
+
+            int bookCopyId = Integer.parseInt(inputId);
+            BookCopy bookCopy = bookManager.getBookCopyById(bookCopyId);
+            if (bookCopy == null) {
+                System.out.println("입력하신 ID에 해당하는 도서 사본이 존재하지 않습니다. 사용자 메뉴 화면으로 이동합니다.");
+                return;
+            }
+
+            // 도서 연혁 출력
+            System.out.println("--------------------------------------------------------------------------");
+            Book book = bookManager.getBookById(bookCopy.getBookId());
+            String authors = book.getAuthors().stream()
+                    .map(Author::getName)
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("no author");
+            System.out.printf("도서: %s (저자: %s)%n", book.getTitle(), authors);
+
+            // 입고일 출력
+            System.out.printf("입고일: %s%n", bookCopy.getAddedDate() != null ? bookCopy.getAddedDate() : "알 수 없음");
+
+            // 대출/반납 기록 출력
+            System.out.println("대출/반납 기록:");
+            List<BorrowRecord> borrowRecords = bookManager.getBorrowRecordsByCopyId(bookCopyId);
+            List<ReturnRecord> returnRecords = bookManager.getReturnRecordsByCopyId(bookCopyId);
+
+            for (BorrowRecord borrowRecord : borrowRecords) {
+                System.out.println("[대출]");
+                System.out.printf("- 대출자 ID: %s%n", borrowRecord.getUserId());
+                System.out.printf("- 대출 날짜: %s%n", borrowRecord.getBorrowDate());
+                System.out.printf("- 반납 기한: %s%n", borrowRecord.getScheduledReturnDate());
+
+                // 대응되는 반납 기록 확인
+                ReturnRecord correspondingReturnRecord = returnRecords.stream()
+                        .filter(returnRecord -> returnRecord.getCopyId() == borrowRecord.getCopyId() &&
+                                !returnRecord.getReturnDate().isBefore(borrowRecord.getBorrowDate()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (correspondingReturnRecord != null) {
+                    System.out.println("[반납]");
+                    System.out.printf("- 반납 날짜: %s%n", correspondingReturnRecord.getReturnDate());
+                } else {
+                    System.out.println("- 현재 대출 중");
+                }
+            }
+
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("사용자 메뉴 화면으로 이동합니다.");
+            return;
+        }
+    }
+
 
     private boolean isValidBookId(String id) {
         return id.matches("^(0|[1-9]\\d*)$");

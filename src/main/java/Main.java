@@ -118,7 +118,7 @@ public class Main {
 
                     if (account instanceof Admin) {
                         System.out.println("관리자 권한으로 접속합니다. 관리자 메뉴화면으로 이동합니다.");
-                        AdminInterface adminInterface = new AdminInterface((Admin) account);
+                        AdminInterface adminInterface = new AdminInterface((Admin) account, tempDate);
                         adminInterface.showMenu();
                     } else if (account instanceof User) {
                         System.out.println("사용자 권한으로 접속합니다. 사용자 메뉴화면으로 이동합니다.");

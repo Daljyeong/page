@@ -12,11 +12,13 @@ public class BookCopy implements Serializable {
     private boolean isBorrowed;
     private LocalDate returnDate;
     private int bookId;
+    private LocalDate addedDate;
 
     public BookCopy(int bookId) {
         this.copyId = nextCopyId++;
         this.isBorrowed = false;
         this.bookId = bookId;
+        this.addedDate = LocalDate.now();
     }
 
     public int getCopyId() {
@@ -44,5 +46,13 @@ public class BookCopy implements Serializable {
 
     public int getBookId() {
         return bookId;
+    }
+
+    public LocalDate getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(LocalDate addedDate) {
+        this.addedDate = addedDate;
     }
 }

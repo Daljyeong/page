@@ -2,6 +2,8 @@ package manager;
 
 import models.Book;
 import models.BookCopy;
+import record.BorrowRecord;
+import record.ReturnRecord;
 
 import java.util.List;
 
@@ -31,5 +33,16 @@ public interface BookManager {
 
     int getBorrowPeriod();
 
+    // 대출 기록 조회
+    List<BorrowRecord> getBorrowRecordsByCopyId(int copyId);
+
+    // 반납 기록 조회
+    List<ReturnRecord> getReturnRecordsByCopyId(int copyId);
+
+    // 대출 기록 추가
+    void addBorrowRecord(BorrowRecord record);
+
+    // 반납 기록 추가
+    void addReturnRecord(ReturnRecord record);
 
 }

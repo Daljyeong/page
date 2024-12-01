@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import models.*;
+import record.BorrowRecord;
+import record.ReturnRecord;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,9 @@ public class MemoryBookManager implements Serializable, BookManager {
     private final String FILE_PATH = "books.post";
 
     private int borrowPeriod = 7; // 최초 기본 7일
+
+    private List<BorrowRecord> borrowRecords = new ArrayList<>();
+    private List<ReturnRecord> returnRecords = new ArrayList<>();
 
     private MemoryBookManager() {
         books = new HashMap<>();
@@ -158,5 +163,33 @@ public class MemoryBookManager implements Serializable, BookManager {
 
     public int getBorrowPeriod() {
         return borrowPeriod;
+    }
+
+    public List<BorrowRecord> getBorrowRecordsByCopyId(int copyId) {
+        List<BorrowRecord> result = new ArrayList<>();
+        for (BorrowRecord record : borrowRecords) {
+            if (record.getCopyId() == copyId) {
+                result.add(record);
+            }
+        }
+        return result;
+    }
+
+    public List<ReturnRecord> getReturnRecordsByCopyId(int copyId) {
+        List<ReturnRecord> result = new ArrayList<>();
+        for (ReturnRecord record : returnRecords) {
+            if (record.getCopyId() == copyId) {
+                result.add(record);
+            }
+        }
+        return result;
+    }
+
+    public void addBorrowRecord(BorrowRecord record) {
+        borrowRecords.add(record);
+    }
+
+    public void addReturnRecord(ReturnRecord record) {
+        returnRecords.add(record);
     }
 }

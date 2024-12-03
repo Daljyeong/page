@@ -1,10 +1,13 @@
 package manager;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
 import models.*;
+import record.BorrowRecord;
+import record.ReturnRecord;
 
 import java.util.ArrayList;
 
@@ -16,6 +19,10 @@ public class MemoryBookManager implements Serializable, BookManager {
     private final String FILE_PATH = "books.post";
 
     private int borrowPeriod = 7; // 최초 기본 7일
+
+    private List<BorrowRecord> borrowRecords = new ArrayList<>();
+    private List<ReturnRecord> returnRecords = new ArrayList<>();
+    private List<BookCopy> deletedCopies = new ArrayList<>();
 
     private MemoryBookManager() {
         books = new HashMap<>();
@@ -84,11 +91,14 @@ public class MemoryBookManager implements Serializable, BookManager {
     }
 
     // 도서 사본 삭제 메서드
-    public void removeBookCopy(int copyId) {
+    public void removeBookCopy(int copyId, LocalDate currentDate) {
         for (Book book : books.values()) {
             List<BookCopy> copies = book.getCopies();
             for (int i = 0; i < copies.size(); i++) {
                 if (copies.get(i).getCopyId() == copyId) {
+                    BookCopy deletedCopy = copies.get(i);
+                    deletedCopy.setDeletedDate(currentDate);
+                    deletedCopies.add(deletedCopy);
                     copies.remove(i);
                     saveData(); // 도서 사본 삭제 시 저장
                     return;
@@ -108,6 +118,12 @@ public class MemoryBookManager implements Serializable, BookManager {
                 if (copy.getCopyId() == bookCopyId) {
                     return copy;
                 }
+            }
+        }
+
+        for (BookCopy copy: deletedCopies){
+            if (copy.getCopyId() == bookCopyId){
+                return copy;
             }
         }
         return null;
@@ -158,5 +174,33 @@ public class MemoryBookManager implements Serializable, BookManager {
 
     public int getBorrowPeriod() {
         return borrowPeriod;
+    }
+
+    public List<BorrowRecord> getBorrowRecordsByCopyId(int copyId) {
+        List<BorrowRecord> result = new ArrayList<>();
+        for (BorrowRecord record : borrowRecords) {
+            if (record.getCopyId() == copyId) {
+                result.add(record);
+            }
+        }
+        return result;
+    }
+
+    public List<ReturnRecord> getReturnRecordsByCopyId(int copyId) {
+        List<ReturnRecord> result = new ArrayList<>();
+        for (ReturnRecord record : returnRecords) {
+            if (record.getCopyId() == copyId) {
+                result.add(record);
+            }
+        }
+        return result;
+    }
+
+    public void addBorrowRecord(BorrowRecord record) {
+        borrowRecords.add(record);
+    }
+
+    public void addReturnRecord(ReturnRecord record) {
+        returnRecords.add(record);
     }
 }

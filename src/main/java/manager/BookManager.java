@@ -2,7 +2,10 @@ package manager;
 
 import models.Book;
 import models.BookCopy;
+import record.BorrowRecord;
+import record.ReturnRecord;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface BookManager {
@@ -10,7 +13,7 @@ public interface BookManager {
     public Book addBook(String title, List<String> authors, int quantity);
 
     // 도서 삭제 메서드
-    public void removeBookCopy(int copyId);
+    public void removeBookCopy(int copyId, LocalDate removeDate);
 
     // 도서 ID로 검색
     public Book getBookById(int id);
@@ -31,5 +34,16 @@ public interface BookManager {
 
     int getBorrowPeriod();
 
+    // 대출 기록 조회
+    List<BorrowRecord> getBorrowRecordsByCopyId(int copyId);
+
+    // 반납 기록 조회
+    List<ReturnRecord> getReturnRecordsByCopyId(int copyId);
+
+    // 대출 기록 추가
+    void addBorrowRecord(BorrowRecord record);
+
+    // 반납 기록 추가
+    void addReturnRecord(ReturnRecord record);
 
 }

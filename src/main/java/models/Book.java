@@ -43,7 +43,7 @@ public class Book implements Serializable {
     public void addCopies(int quantity, LocalDate addedDate) {
         for (int i = 0; i < quantity; i++) {
             BookCopy copy = new BookCopy(this.id);
-            copy.setAddedDate(addedDate); // 입고일 설정
+//            copy.setAddedDate(addedDate); // 의미 없는 코드
             copies.add(copy);
         }
     }

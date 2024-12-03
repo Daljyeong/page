@@ -1,5 +1,7 @@
 package models;
 
+import record.LastAccessRecord;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -19,7 +21,7 @@ public class BookCopy implements Serializable {
         this.copyId = nextCopyId++;
         this.isBorrowed = false;
         this.bookId = bookId;
-        this.addedDate = LocalDate.now();
+        this.addedDate = LastAccessRecord.getInstance().getLastAccessDate();
         this.deletedDate = null;
     }
 

@@ -15,7 +15,8 @@ public class MemoryBookManager implements Serializable, BookManager {
     private static final long serialVersionUID = 1L;
     private static MemoryBookManager instance = null;
     private HashMap<Integer, Book> books;
-    private int nextId = 1000; // 도서 ID 자동 증가
+    private static int nextId = 1000; // 도서 ID 자동 증가
+    private static int nextCopyId = 1; // 도서 ID 자동 증가
     private final String FILE_PATH = "books.post";
 
     private int borrowPeriod = 7; // 최초 기본 7일
@@ -145,6 +146,7 @@ public class MemoryBookManager implements Serializable, BookManager {
     // 모든 도서 로드
     @SuppressWarnings("unchecked")
     public void loadData() {
+        nextCopyId = 1;
         File file = new File(FILE_PATH);
         if (!file.exists()) {
             return; // 파일이 없으면 초기화된 상태 유지
@@ -155,6 +157,19 @@ public class MemoryBookManager implements Serializable, BookManager {
             for (int id : books.keySet()) {
                 if (id >= nextId) {
                     nextId = id + 1;
+                }
+            }
+            // 다음 복사본 ID 설정
+            for (Book book : books.values()){
+                for (BookCopy copy : book.getCopies()){
+                    if (copy.getCopyId() >= nextCopyId){
+                        nextCopyId = copy.getCopyId() + 1;
+                    }
+                }
+            }
+            for (BookCopy copy : deletedCopies){
+                if (copy.getCopyId() >= nextCopyId){
+                    nextCopyId = copy.getCopyId() + 1;
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -202,5 +217,8 @@ public class MemoryBookManager implements Serializable, BookManager {
 
     public void addReturnRecord(ReturnRecord record) {
         returnRecords.add(record);
+    }
+    public static int getNextCopyId() {
+        return nextCopyId++;
     }
 }

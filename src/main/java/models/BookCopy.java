@@ -5,11 +5,12 @@ import record.LastAccessRecord;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import manager.MemoryBookManager;
+
 // BookCopy 클래스
 public class BookCopy implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private static int nextCopyId = 1;  // 고유 ID 생성용
     private int copyId;
     private boolean isBorrowed;
     private LocalDate returnDate;
@@ -18,7 +19,7 @@ public class BookCopy implements Serializable {
     private LocalDate deletedDate;
 
     public BookCopy(int bookId) {
-        this.copyId = nextCopyId++;
+        this.copyId = MemoryBookManager.getNextCopyId();
         this.isBorrowed = false;
         this.bookId = bookId;
         this.addedDate = LastAccessRecord.getInstance().getLastAccessDate();

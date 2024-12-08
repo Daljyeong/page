@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +11,15 @@ public class Book implements Serializable {
 
     private int id;
     private String title;
-    private List<String> authors;
+    private List<Author> authors;
     private List<BookCopy> copies;
 
-    public Book(int id, String title, List<String> authors, int quantity, int num) {
+    public Book(int id, String title, List<Author> authors, int quantity, int num) {
         this.id = id;
         this.title = title + " (" + num + ")";
-        this.authors = authors.isEmpty() ? List.of("no author") : new ArrayList<>(authors);
+        this.authors = authors.isEmpty() ? List.of(new Author("no author", -1)) : new ArrayList<>(authors);
         this.copies = new ArrayList<>();
-        addCopies(quantity);  // 초기 복사본 생성
+        addCopies(quantity, null);  // 초기 복사본 생성
     }
 
     // Getter 메서드
@@ -30,7 +31,7 @@ public class Book implements Serializable {
         return title;
     }
 
-    public List<String> getAuthors() {
+    public List<Author> getAuthors() {
         return new ArrayList<>(authors);
     }
 
@@ -39,9 +40,11 @@ public class Book implements Serializable {
     }
 
     // 새 복사본 추가 메서드
-    public void addCopies(int quantity) {
+    public void addCopies(int quantity, LocalDate addedDate) {
         for (int i = 0; i < quantity; i++) {
-            copies.add(new BookCopy(this.id));
+            BookCopy copy = new BookCopy(this.id);
+//            copy.setAddedDate(addedDate); // 의미 없는 코드
+            copies.add(copy);
         }
     }
 

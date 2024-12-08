@@ -127,7 +127,10 @@ public class Main {
                     }
                     break;
                 }
+            } else {
+                System.out.println("초기화면으로 이동합니다.");
             }
+            break;
         }
     }
 

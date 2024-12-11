@@ -30,7 +30,9 @@ public class User extends Account implements Serializable {
 
     //todo 도서 대출 메서드
     public void borrowBook(int copyId) {
-        borrowedCopyIds.add(copyId);
+        if (!borrowedCopyIds.contains(copyId)) {
+            borrowedCopyIds.add(copyId);
+        }
     }
 
     //todo 도서 반납 메서드
@@ -40,7 +42,7 @@ public class User extends Account implements Serializable {
 
     //todo 특정 도서 복사본을 이미 대출했는지 확인
     public boolean hasBorrowedBook(BookCopy bookCopy) {
-        return borrowedCopyIds.contains(bookCopy.getCopyId());
+        return borrowedCopyIds.contains(Integer.valueOf(bookCopy.getCopyId()));
     }
 
     // 도서 대출 기록 추가
@@ -68,16 +70,19 @@ public class User extends Account implements Serializable {
 
     //todo 반납안한 계정인지 검사하는 로직
     public boolean hasOverdueBooks() {
+        boolean hasOverdue = false;
         LocalDate currentDate = LastAccessRecord.getInstance().getLastAccessDate();
-        for (BorrowRecord record : borrowRecords) {
-            if (record.isOverdue(currentDate)) {
-                for (ReturnRecord returnRecord : returnRecords) {
-                    if (returnRecord.getCopyId() == record.getCopyId()) return true;
-                }
+
+        for (BorrowRecord record : this.borrowRecords) {
+            boolean isReturned = returnRecords.stream()
+                    .anyMatch(returnRecord -> returnRecord.getCopyId() == record.getCopyId());
+
+            // 반납되지 않았고 연체된 경우만 처리
+            if (!isReturned && record.isOverdue(currentDate)) {
+                hasOverdue = true;
+                System.out.println("연체한 도서 사본 ID: " + record.getCopyId() + " (디버깅용)");
             }
         }
-        return false;
+        return hasOverdue;
     }
-
-
 }

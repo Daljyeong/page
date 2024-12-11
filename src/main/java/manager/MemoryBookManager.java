@@ -17,7 +17,9 @@ public class MemoryBookManager implements Serializable, BookManager {
     private HashMap<Integer, Book> books;
     private static int nextId = 1000; // 도서 ID 자동 증가
     private static int nextCopyId = 1; // 도서 ID 자동 증가
-    private final String FILE_PATH = "books.post";
+    private final String BOOKS_FILE_PATH = "books.post";
+    private final String BORROW_PERIOD_FILE_PATH = "borrowPeriod.post";
+
 
     private int borrowPeriod = 7; // 최초 기본 7일
 
@@ -89,6 +91,7 @@ public class MemoryBookManager implements Serializable, BookManager {
     // 도서 반납기한 설정
     public void setBorrowPeriod(int borrowPeriod) {
         this.borrowPeriod = borrowPeriod;
+        saveData(); // 변경된 값을 즉시 저장
     }
 
     // 도서 사본 삭제 메서드
@@ -146,12 +149,26 @@ public class MemoryBookManager implements Serializable, BookManager {
     // 모든 도서 로드
     @SuppressWarnings("unchecked")
     public void loadData() {
-        nextCopyId = 1;
-        File file = new File(FILE_PATH);
-        if (!file.exists()) {
+
+        // borrowPeriod 불러오기
+        File borrowPeriodFile = new File(BORROW_PERIOD_FILE_PATH);
+        if (!borrowPeriodFile.exists()) {
+            return;
+        } else{
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(BORROW_PERIOD_FILE_PATH))) {
+                borrowPeriod = ois.readInt();
+            } catch (IOException e) {
+                System.out.println("반납 기한을 로드하는 중 오류가 발생했습니다: " + e.getMessage());
+            }
+        }
+
+        // books 불러오기
+        File booksFile = new File(BOOKS_FILE_PATH);
+        if (!booksFile.exists()) {
             return; // 파일이 없으면 초기화된 상태 유지
         }
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+        nextCopyId = 1;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(BOOKS_FILE_PATH))) {
             books = (HashMap<Integer, Book>) ois.readObject();
             // 다음 ID 설정
             for (int id : books.keySet()) {
@@ -179,11 +196,21 @@ public class MemoryBookManager implements Serializable, BookManager {
 
     // 모든 도서 저장
     public void saveData() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
+        // books 저장
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BOOKS_FILE_PATH))) {
             oos.writeObject(books);
         } catch (IOException e) {
             System.out.println("도서 데이터를 저장하는 중 오류가 발생했습니다: " + e.getMessage());
         }
+
+        // borrowPeriod 저장
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BORROW_PERIOD_FILE_PATH))) {
+            oos.writeInt(borrowPeriod);
+        } catch (IOException e) {
+            System.out.println("반납 기한을 저장하는 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+
     }
 
 

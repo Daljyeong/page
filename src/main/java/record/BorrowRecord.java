@@ -10,14 +10,14 @@ public class BorrowRecord implements Serializable {
     private int copyId;
     private LocalDate borrowDate;
     private LocalDate returnDate;
-    private LocalDate scheduledReturnDate;
+    private final LocalDate scheduledReturnDate;
 
     public BorrowRecord(String userId, int bookId, int copyId, LocalDate borrowDate, LocalDate ScheduledReturnDate) {
         this.userId = userId;
         this.bookId = bookId;
         this.copyId = copyId;
         this.borrowDate = borrowDate;
-        this.returnDate = null; // 초기화 시 반납 날짜는 null
+        this.returnDate = null; // 대출 기록 생성 시에는 반납한 날짜 null 로 설정
         this.scheduledReturnDate = ScheduledReturnDate;
     }
 
@@ -51,7 +51,6 @@ public class BorrowRecord implements Serializable {
     //todo 반납기한 넘었는지 검사하는 책임
     public boolean isOverdue(LocalDate currentDate) {
         return currentDate.isAfter(this.scheduledReturnDate);  // 반납 기한(dueDate)을 넘어섰는지 확인
-        // ScheduledReturnDate 로 바껴야하는 거 아닌가?
     }
 
 

@@ -203,13 +203,20 @@ public class MemoryBookManager implements Serializable, BookManager {
             System.out.println("도서 데이터를 저장하는 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        // borrowPeriod 저장
+        // borrowPeriod 파일 불러오기
+        File borrowPeriodFile = new File(BORROW_PERIOD_FILE_PATH);
+
+        // 기존 파일이 있으면 삭제
+        if (borrowPeriodFile.exists()) {
+            borrowPeriodFile.delete();
+        }
+
+        // borrowPeriod 새로 저장
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(BORROW_PERIOD_FILE_PATH))) {
             oos.writeInt(borrowPeriod);
         } catch (IOException e) {
             System.out.println("반납 기한을 저장하는 중 오류가 발생했습니다: " + e.getMessage());
         }
-
 
     }
 

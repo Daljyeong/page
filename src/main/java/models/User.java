@@ -80,7 +80,7 @@ public class User extends Account implements Serializable {
             // 반납되지 않았고 연체된 경우만 처리
             if (!isReturned && record.isOverdue(currentDate)) {
                 hasOverdue = true;
-                System.out.println("연체한 도서 사본 ID: " + record.getCopyId() + " (디버깅용)");
+//                System.out.println("연체한 도서 사본 ID: " + record.getCopyId() + " (디버깅용)");
             }
         }
         return hasOverdue;

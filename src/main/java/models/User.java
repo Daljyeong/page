@@ -14,7 +14,6 @@ public class User extends Account implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    //todo copyIds로 필드 변경
     private List<Integer> borrowedCopyIds = new ArrayList<>();  // 대출 중인 복사본 ID 목록
     private List<BorrowRecord> borrowRecords = new ArrayList<>();
     private List<ReturnRecord> returnRecords = new ArrayList<>();
@@ -28,19 +27,16 @@ public class User extends Account implements Serializable {
         return name;
     }
 
-    //todo 도서 대출 메서드
     public void borrowBook(int copyId) {
         if (!borrowedCopyIds.contains(copyId)) {
             borrowedCopyIds.add(copyId);
         }
     }
 
-    //todo 도서 반납 메서드
     public void returnBook(int copyId) {
         borrowedCopyIds.remove(Integer.valueOf(copyId));
     }
 
-    //todo 특정 도서 복사본을 이미 대출했는지 확인
     public boolean hasBorrowedBook(BookCopy bookCopy) {
         return borrowedCopyIds.contains(Integer.valueOf(bookCopy.getCopyId()));
     }
@@ -57,18 +53,6 @@ public class User extends Account implements Serializable {
         this.returnRecords.add(newReturnRecord);
     }
 
-
-//    // 대출 중인 도서 복사본 ID 반환
-//    public int getBorrowedCopyId(int bookId) {
-//        for (int copyId : borrowedCopyIds) {
-//            if (copyId == bookId) {
-//                return copyId;
-//            }
-//        }
-//        return -1; // 대출 중인 복사본이 없을 경우
-//    }
-
-    //todo 반납안한 계정인지 검사하는 로직
     public boolean hasOverdueBooks() {
         boolean hasOverdue = false;
         LocalDate currentDate = LastAccessRecord.getInstance().getLastAccessDate();

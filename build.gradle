@@ -9,8 +9,14 @@ java {
 }
 
 
-
-group = 'org.kuit4'
+tasks.jar {
+    manifest {
+        attributes(
+                'Main-Class': 'Main'
+        )
+    }
+}
+group = 'untitled'
 version = '1.0-SNAPSHOT'
 
 
